@@ -1,0 +1,36 @@
+{
+	"folders": [
+		{
+			"name": "client",
+			"path": "client"
+		},
+		{
+			"name": "server",
+			"path": "server"
+		},
+		{
+			"name": "whaleybar",
+			"path": "."
+		},
+		{
+			"path": "../../../mnt/c/Users/dustin/.glzr/zebar/whaleybar-bootstrap"
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"callees",
+			"classname",
+			"CLDR",
+			"composables",
+			"Moines",
+			"neostandard",
+			"openai",
+			"tabler",
+			"tailwindcss",
+			"tanstack",
+			"tseslint",
+			"unplugin",
+			"vueuse"
+		]
+	}
+}
