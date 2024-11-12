@@ -1,20 +1,24 @@
 import { z } from 'zod'
+import { type Middleware } from '~/composables/useWith'
 
-export const validate = (schema, data) => {
+type Context = {
+  responseSchema: z.ZodSchema<unknown>
+}
+
+export const zodMiddleware: Middleware<Context> = async (ctx, data) => {
   try {
-    return schema.parse(data)
+    // Validate but don't return - let the pipeline handle the data
+    ctx.responseSchema.parse(data)
+    return ctx
   }
   catch (error) {
+    // Todo: use the logger here instead of console.error
+    console.error('Zod validation failed:', error)
+
     if (error instanceof z.ZodError) {
-      console.error('Zod validation failed:', error.errors)
-      // You can add more error handling or side effects here
+      console.error('Zod validation errors:', error.errors)
     }
 
     throw error
   }
-}
-
-export const zodMiddleware = async (ctx, next) => {
-  await next()
-  ctx.data = validate(ctx.schema, ctx.data)
 }

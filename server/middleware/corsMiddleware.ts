@@ -1,7 +1,6 @@
 import { Context, Next } from '@oak/oak'
 import { env } from '../config/env.js'
 
-// Define the type for the whitelist
 interface Whitelist {
   [key: string]: {
     methods: string
@@ -9,11 +8,10 @@ interface Whitelist {
   }
 }
 
-// CORS whitelist configuration
 const whitelist: Whitelist = {
   'https://whaleybar.deno.dev': {
     methods: 'GET, POST, OPTIONS',
-    headers: 'Authorization, Content-Type',
+    headers: 'Authorization, Content-Type, Cache-Control',
   },
 }
 
@@ -21,7 +19,12 @@ const whitelist: Whitelist = {
 if (env.ENV === 'development') {
   whitelist['http://localhost:4200'] = {
     methods: 'GET, POST, OPTIONS',
-    headers: 'Authorization, Content-Type',
+    headers: 'Authorization, Content-Type, Cache-Control',
+  }
+
+  whitelist['http://localhost:4201'] = {
+    methods: 'GET, POST, OPTIONS',
+    headers: 'Authorization, Content-Type, Cache-Control',
   }
 }
 
@@ -34,13 +37,16 @@ export const corsMiddleware = async (ctx: Context, next: Next) => {
     res.headers.set('Access-Control-Allow-Origin', origin ?? '*')
     res.headers.set('Access-Control-Allow-Methods', whitelist[origin].methods)
     res.headers.set('Access-Control-Allow-Headers', whitelist[origin].headers)
+    res.headers.set('Access-Control-Expose-Headers', 'Cache-Control')
   }
 
-  // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    res.status = 204 // No content
-    res.headers.set('Access-Control-Max-Age', '300') // 5 min cache only on preflight
-    return // Stop the middleware chain
+    res.status = 204 // No Content
+
+    res.headers.set('Access-Control-Max-Age', '86400') // Increased to 24 hours
+    res.headers.set('Cache-Control', 'public, max-age=86400') // Added Cache-Control
+
+    return
   }
 
   await next()

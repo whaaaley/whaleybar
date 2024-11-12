@@ -1,5 +1,1 @@
-import api from './api.ts'
-
-export default {
-  api,
-}
+export { default as api } from './api.ts'

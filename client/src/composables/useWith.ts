@@ -1,7 +1,9 @@
-export type Fn<T> = (ctx: T) => Promise<unknown>
-export type Middleware<T> = (ctx: T) => Promise<unknown>
+import { ref } from 'vue'
 
-export interface MiddlewareCtx<T> {
+export type Fn<T> = (ctx: T) => Promise<unknown>
+export type Middleware<T> = (ctx: T, data?: unknown, error?: unknown) => Promise<unknown>
+
+export type MiddlewareCtx<T> = {
   fn: Fn<T>
   beforeQueue: Middleware<T>[]
   afterQueue: Middleware<T>[]
@@ -33,7 +35,7 @@ export const useWith = <T>(params: MiddlewareCtx<T>) => {
       data.value = await params.fn(ctx)
 
       for (const middleware of params.afterQueue) {
-        await middleware(ctx)
+        await middleware(ctx, data.value, error.value)
       }
 
       return data.value

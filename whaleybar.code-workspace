@@ -22,6 +22,7 @@
 			"classname",
 			"CLDR",
 			"composables",
+			"logtape",
 			"Moines",
 			"neostandard",
 			"openai",

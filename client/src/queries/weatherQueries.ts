@@ -1,16 +1,26 @@
-import { withPost } from '~/promisePipelines/fetchPipeline.ts'
+import { z } from 'zod'
+import { withGet } from '~/promisePipelines/fetchPipeline'
 
-interface GetWeatherParams {
+type GetWeatherParams = {
   location: string
 }
 
-// Todo: add a dev middleware to swap out the URL based on the environment
+const WeatherResponseSchema = z.object({
+  condition: z.string(),
+  temp: z.string(),
+})
+
+type WeatherResponse = z.infer<typeof WeatherResponseSchema>
+
 export const weatherQueries = {
   getWeather: (params: GetWeatherParams) => (
-    withPost.execute({
-      url: 'http://localhost:4202/api/get-weather',
-      body: JSON.stringify(params),
-      // todo: add zod schema for zod validation
-    })
+    withGet.execute({
+      url: 'http://localhost:4202/api/weather',
+      queryString: params,
+      responseSchema: WeatherResponseSchema,
+      headers: {
+        'Cache-Control': 'public, max-age=3600, immutable',
+      },
+    }) as Promise<WeatherResponse>
   ),
 }

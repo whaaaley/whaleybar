@@ -21,6 +21,9 @@
 
     /* Linting */
     "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
@@ -29,7 +32,7 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["src/*"]
-    }
+    },
   },
   "include": [
     "src/**/*.js",
@@ -37,7 +40,5 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "./auto-imports.d.ts",
-    "./components.d.ts"
   ]
 }

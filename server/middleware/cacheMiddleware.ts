@@ -1,52 +1,58 @@
 import { Context, Next } from '@oak/oak'
 import { encodeBase64 } from '@std/encoding'
+import { getLogger } from '@logtape/logtape'
 
-// WARNING: This code is untested!!!
+interface CacheOptions {
+  ttl?: number
+  excludePaths?: string[]
+}
 
-export const cacheMiddleware = async (ctx: Context, next: Next) => {
-  const { request: req, response: res } = ctx
+const logger = getLogger(['app'])
 
-  // Open the cache
-  const cache = await caches.open('oak-cache')
+export const createCacheMiddleware = (options: CacheOptions = {}) => {
+  const {
+    ttl = 5 * 60 * 1000, // 5 minutes
+    excludePaths = [],
+  } = options
 
-  // Skip caching if Authorization header is present
-  // This is a simple way to avoid caching sensitive data
-  if (req.headers.has('Authorization')) {
+  const cache = new Map()
+
+  return async (ctx: Context, next: Next) => {
+    const { request: req, response: res } = ctx
+
+    if (excludePaths.some((path) => req.url.pathname.startsWith(path))) {
+      await next()
+      return
+    }
+
+    if (!['GET', 'POST'].includes(req.method) || req.headers.has('Authorization')) {
+      await next()
+      return
+    }
+
+    let cacheKey = req.url.toString()
+
+    if (req.method === 'POST') {
+      const body = await req.body.json()
+      const bodyData = new TextEncoder().encode(JSON.stringify(body))
+      const bodyHash = await crypto.subtle.digest('SHA-256', bodyData)
+      cacheKey += encodeBase64(new Uint8Array(bodyHash))
+    }
+
+    const cached = await cache.get(cacheKey)
+
+    if (cached && Date.now() < cached.expires) {
+      res.body = await cached.response.json()
+      logger.info('Cache hit', { cacheKey })
+      return
+    }
+
     await next()
-    return
+    logger.info('Cache miss', { cacheKey })
+
+    cache.set(cacheKey, {
+      response: new Response(JSON.stringify(res.body), { headers: res.headers }),
+      expires: Date.now() + ttl,
+    })
   }
-
-  // Generate a cache key based on the request URL
-  let cacheKey = req.url.toString()
-
-  // Include the request body in the cache key for POST requests
-  if (req.method === 'POST') {
-    const body = await req.body.json()
-
-    const bodyData = new TextEncoder().encode(JSON.stringify(body))
-    const bodyHash = await crypto.subtle.digest('SHA-256', bodyData)
-
-    cacheKey += encodeBase64(new Uint8Array(bodyHash))
-  }
-
-  // Encode the cache key hash to base64
-  // This is necessary because cache keys can only be strings
-  const encodedCacheKey = encodeBase64(new TextEncoder().encode(cacheKey))
-
-  // Check if the response is already cached
-  // If it is, return the cached response
-  const cachedResponse = await cache.match(encodedCacheKey)
-  if (cachedResponse) {
-    res.body = await cachedResponse.json()
-    return
-  }
-
-  // Proceed if no cache match
-  await next()
-
-  // Cache the response
-  await cache.put(
-    encodedCacheKey,
-    new Response(JSON.stringify(res.body), { headers: res.headers }),
-  )
 }

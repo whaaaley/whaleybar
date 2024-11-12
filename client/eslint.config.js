@@ -3,6 +3,7 @@ import pluginJs from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
 import importPlugin from 'eslint-plugin-import'
 import tailwind from 'eslint-plugin-tailwindcss'
+import unusedImports from 'eslint-plugin-unused-imports'
 import pluginVue from 'eslint-plugin-vue'
 import globals from 'globals'
 import neostandard from 'neostandard'
@@ -62,6 +63,14 @@ const standardConfig = [
   ...neostandard(),
   importPlugin.flatConfigs.recommended,
   {
+    plugins: {
+      'unused-imports': unusedImports,
+    },
+    rules: {
+      'unused-imports/no-unused-imports': 'error',
+    },
+  },
+  {
     rules: {
       // Allow assignment within return statements for concise expressions
       'no-return-assign': 0,
@@ -75,7 +84,11 @@ const standardConfig = [
       // relative imports, and finally type imports
       'import/order': ['error', {
         'newlines-between': 'never',
-        alphabetize: { order: 'asc', orderImportKind: 'asc' },
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+          orderImportKind: 'asc',
+        },
         groups: [
           'builtin',
           'external',
@@ -86,6 +99,14 @@ const standardConfig = [
           'object',
           'type',
         ],
+      }],
+
+      // Sort named imports within each import declaration
+      // e.g. import { aaa, bbb, ccc } from 'module'
+      'sort-imports': ['error', {
+        ignoreDeclarationSort: true, // Let import/order handle declaration sorting
+        allowSeparatedGroups: false,
+        ignoreCase: true,
       }],
     },
   },
@@ -136,4 +157,8 @@ export default [
   // TypeScript's type system handles many checks more accurately than ESLint,
   // including import resolution, type checking, and variable usage.
   ...tseslint.configs.recommended,
+
+  // The TypeScript config adds rules for JSX that we want to disable in favor of
+  // the more accurate TypeScript type checking, which handles JSX syntax correctly
+  // 'react/jsx-no-undef': 0,
 ]

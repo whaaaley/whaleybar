@@ -1,26 +1,33 @@
-import { useWith, Middleware } from './useWith.js'
+import { ZodType } from 'zod'
+import { Middleware, useWith } from './useWith'
 
-interface FetchCtx extends RequestInit {
+type FetchCtx = RequestInit & {
   url: string
+  queryString?: Record<string, string>
+  responseSchema: ZodType<unknown>
 }
 
 const beforeQueue: Middleware<FetchCtx>[] = []
 const afterQueue: Middleware<FetchCtx>[] = []
 
+const createFetchFn = (method?: string) => async (ctx: FetchCtx) => (
+  fetch(ctx.url, { ...ctx, method }).then(res => res.json())
+)
+
 export const useWithFetch = () => useWith<FetchCtx>({
-  fn: ctx => fetch(ctx.url, ctx),
+  fn: createFetchFn(),
   beforeQueue,
   afterQueue,
 })
 
 export const useWithGet = () => useWith<FetchCtx>({
-  fn: ctx => fetch(ctx.url, { ...ctx, method: 'GET' }).then(res => res.json()),
+  fn: createFetchFn('GET'),
   beforeQueue,
   afterQueue,
 })
 
 export const useWithPost = () => useWith<FetchCtx>({
-  fn: ctx => fetch(ctx.url, { ...ctx, method: 'POST' }).then(res => res.json()),
+  fn: createFetchFn('POST'),
   beforeQueue,
   afterQueue,
 })

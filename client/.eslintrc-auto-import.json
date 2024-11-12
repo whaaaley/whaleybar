@@ -82,6 +82,11 @@
     "useWith": true,
     "useWithFetch": true,
     "useWithGet": true,
-    "useWithPost": true
+    "useWithPost": true,
+    "LiveLogs": true,
+    "TimeDate": true,
+    "WeatherLocation": true,
+    "emojiQueries": true,
+    "weatherQueries": true
   }
 }

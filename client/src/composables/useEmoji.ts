@@ -16,7 +16,7 @@ const monthlyEmojis = [
   { month: 'December', name: 'christmas-tree', unicode: '1f384' },
 ]
 
-interface EmojiParams {
+type EmojiParams = {
   name: string
   platform?:
     | 'apple'
@@ -37,7 +37,8 @@ export const useEmoji = () => {
   ) => {
     const baseUrl = 'https://em-content.zobj.net/thumbs'
     const versions = {
-      apple: '354',
+      // apple: '354',
+      apple: '391',
       google: '350',
       microsoft: '319',
       samsung: '320',

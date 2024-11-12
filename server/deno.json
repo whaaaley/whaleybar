@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "start": "env $(cat .env) deno run -A index.js",
+    "start": "env $(cat .env) deno run -A index.ts",
     "build:client": "cd ../client && deno task build",
     "move:client": "rm -rf ./dist && mkdir -p ./dist && cp -r ../client/dist/* ./dist",
     "dev": "deno task build:client && deno task move:client && deno task start"

@@ -1,4 +1,8 @@
-import type { Context } from '@oak/oak'
+import { type Context, Status } from '@oak/oak'
+import { getLogger } from '@logtape/logtape'
+import { z } from 'zod'
+
+const logger = getLogger(['app'])
 
 interface Weather {
   condition: string
@@ -6,25 +10,26 @@ interface Weather {
 }
 
 interface WeatherDeps {
-  getWeather: (location: string) => Promise<{ weather: Weather }>
+  getWeather: (location: string) => Promise<Weather>
 }
+
+const weatherRequestSchema = z.object({
+  location: z.string({
+    required_error: 'Location is required',
+    invalid_type_error: 'Location must be a string',
+  }),
+})
 
 export const createWeatherController = (deps: WeatherDeps) => ({
   getWeather: async ({ response: res, request: req }: Context) => {
-    try {
-      const body = await req.body.json()
-      const weather = await deps.getWeather(body.location)
+    const queryString = Object.fromEntries(req.url.searchParams)
+    const validated = weatherRequestSchema.parse(queryString)
 
-      console.log('weather', weather)
+    const weather = await deps.getWeather(validated.location)
+    logger.info('Weather data retrieved', { weather })
 
-      res.status = 200
-      res.headers.set('Content-Type', 'application/json')
-      res.body = weather
-    } catch (error) {
-      console.error(error)
-
-      res.status = 500
-      res.body = { error }
-    }
+    res.status = Status.OK
+    res.headers.set('Content-Type', 'application/json')
+    res.body = weather
   },
 })
