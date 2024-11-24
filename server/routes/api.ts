@@ -4,9 +4,9 @@ import models from '../models/index.ts'
 
 const router = new Router()
 
-const emojiController = controllers.createEmojiController({
-  getWeatherEmoji: models.emojiModel.getWeatherEmoji,
-})
+// const emojiController = controllers.createEmojiController({
+//   getWeatherEmoji: models.emojiModel.getWeatherEmoji,
+// })
 
 const weatherController = controllers.createWeatherController({
   getWeather: models.weatherModel.getWeather,
@@ -18,7 +18,7 @@ const weatherController = controllers.createWeatherController({
 
 const logStreamController = controllers.createLogStreamController()
 
-router.get('/api/weather-emoji', emojiController.getWeatherEmoji)
+// router.get('/api/weather-emoji', emojiController.getWeatherEmoji)
 router.get('/api/weather', weatherController.getWeather)
 
 router.post('/api/log', logStreamController.log)
