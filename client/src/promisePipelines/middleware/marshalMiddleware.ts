@@ -10,7 +10,6 @@ export const marshalMiddleware: Middleware<RequestContext> = async (context) => 
   }
 
   if (context.body) {
-    console.log('context.body', context.body, typeof context.body)
     context.body = JSON.stringify(context.body)
     context.headers = {
       ...context.headers,

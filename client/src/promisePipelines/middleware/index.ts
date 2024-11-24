@@ -1,4 +1,5 @@
 export { authMiddleware } from './authMiddleware'
+export { devMiddleware } from './devMiddleware'
 export { httpMiddleware } from './httpMiddleware.ts'
 export { marshalMiddleware } from './marshalMiddleware.ts'
 export { zodMiddleware } from './zodMiddleware'

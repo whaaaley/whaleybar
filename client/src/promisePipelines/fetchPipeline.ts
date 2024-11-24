@@ -1,14 +1,17 @@
-import { httpMiddleware, marshalMiddleware, zodMiddleware } from './middleware/index'
+import * as middleware from './middleware/index'
 import { useWithGet, useWithPost } from '~/composables/useWithFetch'
 
 export const withGet = useWithGet()
 export const withPost = useWithPost()
 
-withGet.useBefore(marshalMiddleware)
-withPost.useBefore(marshalMiddleware)
+withGet.useBefore(middleware.devMiddleware)
+withPost.useBefore(middleware.devMiddleware)
 
-withGet.useAfter(httpMiddleware)
-withPost.useAfter(httpMiddleware)
+withGet.useBefore(middleware.marshalMiddleware)
+withPost.useBefore(middleware.marshalMiddleware)
 
-withGet.useAfter(zodMiddleware)
-withPost.useAfter(zodMiddleware)
+withGet.useAfter(middleware.httpMiddleware)
+withPost.useAfter(middleware.httpMiddleware)
+
+withGet.useAfter(middleware.zodMiddleware)
+withPost.useAfter(middleware.zodMiddleware)

@@ -35,7 +35,7 @@ type LogResponse = z.infer<typeof LogResponseSchema>
 export const logStreamQueries = {
   connectLogs: async (params: ConnectLogsParams) => {
     const { data } = await withSSE.execute({
-      url: 'http://localhost:4202/stream/logs',
+      url: '/stream/logs',
       responseSchema: LogResponseSchema,
       onMessage: params.onMessage,
     })
@@ -44,7 +44,7 @@ export const logStreamQueries = {
   },
   sendLog: async (params: SendLogParams) => {
     const { data } = await withPost.execute({
-      url: 'http://localhost:4202/api/log',
+      url: '/api/log',
       body: params,
       responseSchema: LogResponseSchema,
     })

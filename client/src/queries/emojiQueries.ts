@@ -22,7 +22,7 @@ type WeatherEmojiResponse = z.infer<typeof WeatherEmojiResponseSchema>
 export const emojiQueries = {
   getWeatherEmoji: async (params: GetWeatherEmojiParams) => (
     withGet.execute({
-      url: 'http://localhost:4202/api/weather-emoji',
+      url: '/api/weather-emoji',
       queryString: params,
       responseSchema: WeatherEmojiResponseSchema,
       headers: {

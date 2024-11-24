@@ -21,7 +21,7 @@ type WeatherResponse = z.infer<typeof WeatherResponseSchema>
 export const weatherQueries = {
   getWeather: async (params: GetWeatherParams) => {
     const { data } = await withGet.execute({
-      url: 'http://localhost:4202/api/weather',
+      url: '/api/weather',
       queryString: params,
       responseSchema: WeatherResponseSchema,
       headers: {
