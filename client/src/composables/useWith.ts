@@ -1,58 +1,67 @@
 import { ref } from 'vue'
 
-export type Fn<T> = (ctx: T) => Promise<unknown>
-export type Middleware<T> = (ctx: T, data?: unknown, error?: unknown) => Promise<unknown>
+export type Fn<T, R> = (ctx: T, runAfterQueue: (result: R) => void) => Promise<R>
+export type Middleware<T> = (ctx: T) => Promise<void>
 
-export type MiddlewareCtx<T> = {
-  fn: Fn<T>
-  beforeQueue: Middleware<T>[]
-  afterQueue: Middleware<T>[]
+export type MiddlewareCtx<T, R> = {
+  fn: Fn<T, R>
 }
 
-export const useWith = <T>(params: MiddlewareCtx<T>) => {
-  const data = ref<unknown | null>(null)
+export type UseWithOptions = {
+  shouldThrow?: boolean
+}
+
+export const useWith = <T, R>(params: MiddlewareCtx<T, R>) => {
+  const data = ref<R | null>(null)
   const error = ref<unknown | null>(null)
-  const loading = ref<boolean>(false)
+
+  const beforeQueue: Middleware<T>[] = []
+  const afterQueue: Middleware<R>[] = []
 
   const useBefore = (middleware: Middleware<T>) => {
-    params.beforeQueue.push(middleware)
+    beforeQueue.push(middleware)
   }
 
-  const useAfter = (middleware: Middleware<T>) => {
-    params.afterQueue.push(middleware)
+  const useAfter = (middleware: Middleware<R>) => {
+    afterQueue.push(middleware)
   }
 
-  const execute = async (ctx: T) => {
+  const runAfterQueue = async (result: R) => {
+    for (const middleware of afterQueue) {
+      await middleware(result)
+    }
+  }
+
+  const execute = async (ctx: T, options: UseWithOptions = {}) => {
+    const { shouldThrow = true } = options
+
     data.value = null
     error.value = null
-    loading.value = true
 
     try {
-      for (const middleware of params.beforeQueue) {
+      for (const middleware of beforeQueue) {
         await middleware(ctx)
       }
 
-      data.value = await params.fn(ctx)
+      const result = await params.fn(ctx, runAfterQueue)
+      data.value = result
 
-      for (const middleware of params.afterQueue) {
-        await middleware(ctx, data.value, error.value)
-      }
+      await runAfterQueue(result)
 
       return data.value
     }
     catch (err) {
       error.value = err
-      throw err
-    }
-    finally {
-      loading.value = false
+
+      if (shouldThrow) {
+        throw err
+      }
     }
   }
 
   return {
     data,
     error,
-    loading,
     useBefore,
     useAfter,
     execute,

@@ -10,13 +10,16 @@
 		},
 		{
 			"name": "whaleybar",
-			"path": "."
+			"path": ".",
 		},
 		{
 			"path": "../../../mnt/c/Users/dustin/.glzr/zebar/whaleybar-bootstrap"
 		}
 	],
 	"settings": {
+		"cSpell.enabledFileTypes": {
+			"*": true
+		},
 		"cSpell.words": [
 			"callees",
 			"classname",
@@ -25,13 +28,20 @@
 			"logtape",
 			"Moines",
 			"neostandard",
+			"nixpkgs",
 			"openai",
+			"pkgs",
+			"sunshower",
 			"tabler",
 			"tailwindcss",
 			"tanstack",
+			"tmuxinator",
 			"tseslint",
+			"unmarshal",
 			"unplugin",
-			"vueuse"
+			"vueuse",
+			"whaleybar",
+			"Zebar"
 		]
 	}
 }

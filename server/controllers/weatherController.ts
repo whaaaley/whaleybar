@@ -4,12 +4,12 @@ import { z } from 'zod'
 
 const logger = getLogger(['app'])
 
-interface Weather {
+type Weather = {
   condition: string
   temp: string
 }
 
-interface WeatherDeps {
+type WeatherDeps = {
   getWeather: (location: string) => Promise<Weather>
 }
 
@@ -21,7 +21,9 @@ const weatherRequestSchema = z.object({
 })
 
 export const createWeatherController = (deps: WeatherDeps) => ({
-  getWeather: async ({ response: res, request: req }: Context) => {
+  getWeather: async (ctx: Context) => {
+    const { response: res, request: req } = ctx
+
     const queryString = Object.fromEntries(req.url.searchParams)
     const validated = weatherRequestSchema.parse(queryString)
 

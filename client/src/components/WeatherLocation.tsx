@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/vue-query'
-import { computed, defineComponent, onMounted, watch } from 'vue'
+import { computed, defineComponent, onMounted } from 'vue'
 import { useEmoji } from '~/composables/useEmoji'
-import { emojiQueries, weatherQueries } from '~/queries/index'
+import { weatherQueries } from '~/queries/index'
+import { getWeatherEmoji } from '~/utils/getWeatherEmoji'
 
 export default defineComponent({
   name: 'WeatherLocation',
@@ -29,33 +30,16 @@ export default defineComponent({
       ),
     })
 
-    const {
-      data: weatherEmoji,
-      error: weatherEmojiError,
-      refetch: refetchWeatherEmoji,
-      isLoading: isLoadingWeatherEmoji,
-    } = useQuery({
-      enabled: false,
-      queryKey: [props.location, weather.value],
-      queryFn: () => {
-        if (!weather.value) return
-
-        return emojiQueries.getWeatherEmoji({
-          weatherCondition: weather.value.condition,
-        })
-      },
-    })
-
-    const isLoading = computed(() => (
-      isLoadingWeather.value || isLoadingWeatherEmoji.value
-    ))
+    const isLoading = computed(() => isLoadingWeather.value)
 
     const emojiUrl = computed(() => {
-      if (!weatherEmoji.value) return
+      if (!weather.value) return
+
+      const weatherEmoji = getWeatherEmoji(weather.value.condition)
 
       return getEmoji({
-        name: weatherEmoji.value.cldrName,
-        unicode: weatherEmoji.value.codePoints,
+        name: weatherEmoji.cldrName,
+        unicode: weatherEmoji.codePoints,
       })
     })
 
@@ -64,23 +48,14 @@ export default defineComponent({
 
     onMounted(async () => {
       await refetchWeather()
-      await refetchWeatherEmoji()
-    })
-
-    watch(weather, () => {
-      console.log('weather', weather.value)
-    })
-
-    watch(weatherEmoji, () => {
-      console.log('weatherEmoji', weatherEmoji.value)
     })
 
     return () => (
       <div class=' flex h-12 items-center gap-2 font-segoe text-white'>
-        {weatherEmoji.value && (
+        {weather.value && (
           <img class='size-8' src={emojiUrl.value}/>
         )}
-        {!isLoading.value && weatherEmojiError.value && (
+        {!isLoading.value && weatherError.value && (
           <img class='size-8' src={errorEmojiUrl}/>
         )}
         {isLoading.value && (

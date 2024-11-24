@@ -1,25 +1,66 @@
 import './index.css'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 import { createApp, defineComponent } from 'vue'
+import { createRouter, createWebHistory, RouterView } from 'vue-router'
 import { LiveLogs, TimeDate, WeatherLocation } from '~/components'
 
 const App = defineComponent({
   name: 'App',
   setup () {
     return () => (
-      <div>
-        <div class='flex gap-4 px-14'>
-          <TimeDate/>
-          <WeatherLocation location='Des Moines, Iowa'/>
-          {/* <WeatherLocation location='Haywards Heath, West Sussex'/> */}
-        </div>
-        <LiveLogs/>
+      <RouterView/>
+    )
+  },
+})
+
+const Zebar = defineComponent({
+  name: 'Zebar',
+  setup () {
+    return () => (
+      <div class='flex gap-4 px-14'>
+        <TimeDate/>
+        <WeatherLocation location='Des Moines, Iowa'/>
+        {/* <WeatherLocation location='Haywards Heath, UK'/> */}
       </div>
     )
   },
 })
 
+const routes = [{
+  name: 'home',
+  path: '/',
+  component: defineComponent({
+    name: 'Home',
+    setup () {
+      return () => (
+        <Zebar/>
+      )
+    },
+  }),
+}, {
+  name: 'logs',
+  path: '/logs',
+  component: defineComponent({
+    name: 'Logs',
+    setup () {
+      return () => (
+        <div class='h-screen overflow-auto bg-black text-white'>
+          <Zebar/>
+          <LiveLogs/>
+        </div>
+      )
+    },
+  }),
+}]
+
 const app = createApp(App)
 
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
+
+app.use(router)
 app.use(VueQueryPlugin)
+
 app.mount('#app')

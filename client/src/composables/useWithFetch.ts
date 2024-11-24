@@ -1,33 +1,53 @@
 import { ZodType } from 'zod'
-import { Middleware, useWith } from './useWith'
+import { useWith } from './useWith'
 
-type FetchCtx = RequestInit & {
+export type RequestContext = RequestInit & {
   url: string
   queryString?: Record<string, string>
-  responseSchema: ZodType<unknown>
+  body?: Record<string, unknown>
+  responseSchema: ZodType<unknown> // Maybe find a better way to handle this
 }
 
-const beforeQueue: Middleware<FetchCtx>[] = []
-const afterQueue: Middleware<FetchCtx>[] = []
+export type FetchContext = {
+  request: RequestContext
+  data: unknown
+  response: Response
+}
 
-const createFetchFn = (method?: string) => async (ctx: FetchCtx) => (
-  fetch(ctx.url, { ...ctx, method }).then(res => res.json())
-)
+type FetchFunction = (request: RequestContext) => Promise<FetchContext>
 
-export const useWithFetch = () => useWith<FetchCtx>({
+const createFetchFn = (method?: string): FetchFunction => async (request) => {
+  const response = await fetch(request.url, { ...request, method })
+  const headers = response.headers.get('Content-Type') ?? ''
+
+  const data = headers.includes('application/json')
+    ? await response.json()
+    : await response.text()
+
+  // Opinionated way to handle server errors
+  if (!response.ok) {
+    if (Array.isArray(data)) {
+      throw new Error(data[0]?.message || `API request failed: ${response.status}`)
+    }
+
+    throw new Error(`API request failed: ${response.status} ${response.statusText}`)
+  }
+
+  return {
+    request,
+    data,
+    response,
+  }
+}
+
+export const useWithFetch = () => useWith<RequestContext, FetchContext>({
   fn: createFetchFn(),
-  beforeQueue,
-  afterQueue,
 })
 
-export const useWithGet = () => useWith<FetchCtx>({
+export const useWithGet = () => useWith<RequestContext, FetchContext>({
   fn: createFetchFn('GET'),
-  beforeQueue,
-  afterQueue,
 })
 
-export const useWithPost = () => useWith<FetchCtx>({
+export const useWithPost = () => useWith<RequestContext, FetchContext>({
   fn: createFetchFn('POST'),
-  beforeQueue,
-  afterQueue,
 })

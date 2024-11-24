@@ -13,7 +13,7 @@ const WeatherEmojiResponseSchema = z.object({
 
 type WeatherEmojiResponse = z.infer<typeof WeatherEmojiResponseSchema>
 
-// Todo: add a dev middleware to swap out the URL based on the environment
+// Todo: add middleware to swap out the URL based on the environment
 
 // Type casting with 'as Promise<WeatherEmojiResponse>' is safe here because:
 // 1. The Zod schema (WeatherEmojiResponseSchema) validates the data at runtime

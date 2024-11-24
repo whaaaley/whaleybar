@@ -1,7 +1,7 @@
 #!/bin/sh
-session='reasonable'
+session='whaleybar'
 
-tmux new-session -d -s $session -n 'Whaleybar'
+tmux new-session -d -s $session -n 'whaleybar'
 tmux send-keys -t $session:0 'cd client' C-m
 tmux send-keys -t $session:0 'npm run dev' C-m
 

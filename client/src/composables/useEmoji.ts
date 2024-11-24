@@ -35,9 +35,8 @@ export const useEmoji = () => {
   const getEmoji = (
     { name, platform = 'apple', size = 240, unicode }: EmojiParams,
   ) => {
-    const baseUrl = 'https://em-content.zobj.net/thumbs'
+    const baseUrl = 'https://em-content.zobj.net/source'
     const versions = {
-      // apple: '354',
       apple: '391',
       google: '350',
       microsoft: '319',
@@ -46,13 +45,16 @@ export const useEmoji = () => {
       whatsapp: '352',
     }
 
-    return `${baseUrl}/${size}/${platform}/${versions[platform]}/${name}${
+    return `${baseUrl}/${platform}/${versions[platform]}/${name}${
       unicode ? `_${unicode}` : ''
     }.png`
   }
 
   const monthlyAppleEmojiUrl = computed(() => {
     const currentEmoji = monthlyEmojis[now.value.getMonth()]
+
+    if (!currentEmoji) return
+
     return getEmoji({
       name: currentEmoji.name,
       unicode: currentEmoji.unicode,

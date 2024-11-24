@@ -1,15 +1,14 @@
-// import { authMiddleware } from './middleware/authMiddleware'
-import { serializationMiddleware, zodMiddleware } from './middleware/index'
+import { httpMiddleware, marshalMiddleware, zodMiddleware } from './middleware/index'
 import { useWithGet, useWithPost } from '~/composables/useWithFetch'
 
 export const withGet = useWithGet()
 export const withPost = useWithPost()
 
-// withGet.useBefore(authMiddleware)
-// withPost.useBefore(authMiddleware)
+withGet.useBefore(marshalMiddleware)
+withPost.useBefore(marshalMiddleware)
 
-withGet.useBefore(serializationMiddleware)
-withPost.useBefore(serializationMiddleware)
+withGet.useAfter(httpMiddleware)
+withPost.useAfter(httpMiddleware)
 
 withGet.useAfter(zodMiddleware)
 withPost.useAfter(zodMiddleware)

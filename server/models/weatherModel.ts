@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { getLogger } from '@logtape/logtape'
+
+const logger = getLogger(['app'])
 
 const WeatherRes = z.object({
   condition: z.string(),
@@ -6,9 +9,19 @@ const WeatherRes = z.object({
 })
 
 const getWeather = async (location: string) => {
-  const res = await fetch(`https://wttr.in/${location}?format=j1`)
+  // For testing purposes
+  return {
+    condition: 'Snowing',
+    temp: '32',
+  }
 
-  if (!res.ok) {
+  const res = await fetch(`https://wttr.in/${location}?format=j1`, {
+    headers: {
+      'Cache-Control': 'max-age=3600',
+    },
+  })
+
+  if (!res.ok || res.status !== 200) {
     throw new Error('Failed to fetch weather data')
   }
 

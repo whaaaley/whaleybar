@@ -1,22 +1,17 @@
-import { z } from 'zod'
+import { ZodError } from 'zod'
 import { type Middleware } from '~/composables/useWith'
+import { type FetchContext } from '~/composables/useWithFetch'
 
-type Context = {
-  responseSchema: z.ZodSchema<unknown>
-}
+export const zodMiddleware: Middleware<FetchContext> = async (context) => {
+  const { request, data } = context
 
-export const zodMiddleware: Middleware<Context> = async (ctx, data) => {
   try {
-    // Validate but don't return - let the pipeline handle the data
-    ctx.responseSchema.parse(data)
-    return ctx
+    request.responseSchema.parse(data)
+    return context
   }
   catch (error) {
-    // Todo: use the logger here instead of console.error
-    console.error('Zod validation failed:', error)
-
-    if (error instanceof z.ZodError) {
-      console.error('Zod validation errors:', error.errors)
+    if (error instanceof ZodError) {
+      throw new Error('Unexpected data format received from API')
     }
 
     throw error
