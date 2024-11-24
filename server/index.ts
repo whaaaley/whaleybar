@@ -12,13 +12,6 @@ app.use(middleware.errorMiddleware)
 app.use(middleware.loggerMiddleware)
 app.use(middleware.corsMiddleware)
 
-// app.use(
-//   middleware.createCacheMiddleware({
-//     ttl: 5 * 60 * 1000, // 5 minutes
-//     excludePaths: ['/api/auth'],
-//   }),
-// )
-
 app.use(routes.api.routes())
 app.use(routes.api.allowedMethods())
 
