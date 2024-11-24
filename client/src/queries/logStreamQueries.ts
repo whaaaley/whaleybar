@@ -46,7 +46,7 @@ export const logStreamQueries = {
     const { data } = await withPost.execute({
       url: '/api/log',
       body: params,
-      responseSchema: LogResponseSchema,
+      responseSchema: z.unknown(),
     })
 
     return data as Promise<void>
