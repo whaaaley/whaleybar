@@ -12,9 +12,13 @@ app.use(middleware.errorMiddleware)
 app.use(middleware.loggerMiddleware)
 app.use(middleware.corsMiddleware)
 
+app.use(middleware.staticFileMiddleware)
+
 app.use(routes.api.routes())
 app.use(routes.api.allowedMethods())
 
+// This middleware should be the last one to handle SPA routing in case the
+// requested file does not exist
 app.use(middleware.spaRoutingMiddleware)
 
 const port = parseInt(env.PORT ?? '3000')
