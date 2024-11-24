@@ -33,5 +33,5 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: whaleybar
-          entrypoint: ./index.js
+          entrypoint: ./index.ts
           root: ./server
