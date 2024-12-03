@@ -1,7 +1,8 @@
 import './index.css'
 import { VueQueryPlugin } from '@tanstack/vue-query'
-import { createApp, defineComponent } from 'vue'
+import { createApp, defineComponent, onMounted } from 'vue'
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import * as zebar from 'zebar'
 import { LiveLogs, TimeDate, WeatherLocation } from '~/components'
 
 const App = defineComponent({
@@ -16,6 +17,15 @@ const App = defineComponent({
 const Zebar = defineComponent({
   name: 'Zebar',
   setup () {
+    onMounted(() => {
+      const providers = zebar.createProviderGroup({
+        glazewm: { type: 'glazewm' },
+        weather: { type: 'weather' },
+      })
+
+      console.log(providers)
+    })
+
     return () => (
       <div class='flex gap-4 px-14'>
         <TimeDate/>
