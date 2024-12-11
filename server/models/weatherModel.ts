@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { getLogger } from '@logtape/logtape'
+// import { getLogger } from '@logtape/logtape'
 
-const logger = getLogger(['app'])
+// const logger = getLogger(['app'])
 
 const WeatherRes = z.object({
   condition: z.string(),
@@ -10,10 +10,10 @@ const WeatherRes = z.object({
 
 const getWeather = async (location: string) => {
   // For testing purposes
-  return {
-    condition: 'Snowing',
-    temp: '32',
-  }
+  // return {
+  //   condition: 'Snowing',
+  //   temp: '32',
+  // }
 
   const res = await fetch(`https://wttr.in/${location}?format=j1`, {
     headers: {

@@ -13,6 +13,10 @@ const whitelist: Whitelist = {
     methods: 'GET, POST, OPTIONS',
     headers: 'Authorization, Content-Type, Cache-Control',
   },
+  'http://asset.localhost': {
+    methods: 'GET, POST, OPTIONS',
+    headers: 'Authorization, Content-Type, Cache-Control',
+  },
 }
 
 // Add localhost to whitelist in development environment
@@ -23,11 +27,6 @@ if (env.ENV === 'development') {
   }
 
   whitelist['http://localhost:4201'] = {
-    methods: 'GET, POST, OPTIONS',
-    headers: 'Authorization, Content-Type, Cache-Control',
-  }
-
-  whitelist['http://asset.localhost'] = {
     methods: 'GET, POST, OPTIONS',
     headers: 'Authorization, Content-Type, Cache-Control',
   }
