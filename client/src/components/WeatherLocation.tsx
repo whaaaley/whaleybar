@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { computed, defineComponent, onMounted } from 'vue'
 import { useEmoji } from '~/hooks/useEmoji'
 import { weatherQueries } from '~/io/queries/index'
@@ -14,6 +14,7 @@ export default defineComponent({
   },
   setup (props) {
     const { getEmoji } = useEmoji()
+    const queryClient = useQueryClient()
 
     const {
       data: weather,
@@ -48,6 +49,12 @@ export default defineComponent({
 
     onMounted(async () => {
       await refetchWeather()
+
+      // 3600000 ms = 1 hour
+      setInterval(async () => {
+        queryClient.resetQueries({ queryKey: [props.location] })
+        await refetchWeather()
+      }, 3600000)
     })
 
     return () => (
