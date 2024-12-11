@@ -10,10 +10,10 @@ const WeatherRes = z.object({
 
 const getWeather = async (location: string) => {
   // For testing purposes
-  return {
-    condition: 'Snowing',
-    temp: '32',
-  }
+  // return {
+  //   condition: 'Snowing',
+  //   temp: '32',
+  // }
 
   const res = await fetch(`https://wttr.in/${location}?format=j1`, {
     headers: {
