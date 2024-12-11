@@ -13,6 +13,6 @@ tmux send-keys -t whaleybar:0.1 'cd server' C-m
 tmux send-keys -t whaleybar:0.1 'deno task start' C-m
 
 tmux send-keys -t whaleybar:0.2 'cd client' C-m
-tmux send-keys -t whaleybar:0.2 'npm run build' C-m
+tmux send-keys -t whaleybar:0.2 'npm run build-watch' C-m
 
 tmux attach-session -t whaleybar
