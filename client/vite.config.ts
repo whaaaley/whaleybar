@@ -4,9 +4,13 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { defineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 
+const outDir = process.env.NODE_ENV === 'development'
+  ? '/mnt/c/Users/dustin/.glzr/zebar/whaleybar-build'
+  : undefined
+
 export default defineConfig({
   build: {
-    outDir: '/mnt/c/Users/dustin/.glzr/zebar/whaleybar-build',
+    outDir,
     sourcemap: true,
   },
   plugins: [
