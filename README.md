@@ -33,8 +33,8 @@ This will automatically:
 
 The development environment runs two servers side by side:
 
-- **Web Client** (left pane): React frontend running on `npm`
-- **Server** (right pane): Deno backend
+- **web-client** (left pane): React frontend running on `npm`
+- **server** (right pane): Deno backend
 
 ### Using tmux
 
@@ -61,5 +61,3 @@ If tmux fails to start:
 
 1. Exit the nix-shell (`exit` or Ctrl+D)
 2. Re-enter: `nix-shell`
-
-For any other issues, please open an issue in the repository.

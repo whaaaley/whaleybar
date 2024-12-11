@@ -1,6 +1,6 @@
 import { useDateFormat, useNow } from '@vueuse/core'
 import { defineComponent } from 'vue'
-import { useEmoji } from '~/composables'
+import { useEmoji } from '~/hooks'
 
 export default defineComponent({
   name: 'TimeDate',

@@ -18,23 +18,14 @@ const monthlyEmojis = [
 
 type EmojiParams = {
   name: string
-  platform?:
-    | 'apple'
-    | 'google'
-    | 'microsoft'
-    | 'samsung'
-    | 'twitter'
-    | 'whatsapp'
-  size?: 120 | 240 | 320
+  platform?: 'apple' | 'google' | 'microsoft' | 'samsung' | 'twitter' | 'whatsapp'
   unicode?: string
 }
 
 export const useEmoji = () => {
   const now = useNow()
 
-  const getEmoji = (
-    { name, platform = 'apple', size = 240, unicode }: EmojiParams,
-  ) => {
+  const getEmoji = ({ name, platform = 'apple', unicode }: EmojiParams) => {
     const baseUrl = 'https://em-content.zobj.net/source'
     const versions = {
       apple: '391',
@@ -45,9 +36,10 @@ export const useEmoji = () => {
       whatsapp: '352',
     }
 
-    return `${baseUrl}/${platform}/${versions[platform]}/${name}${
-      unicode ? `_${unicode}` : ''
-    }.png`
+    const filename = `${name}${unicode ? `_${unicode}` : ''}.png`
+    const path = [baseUrl, platform, versions[platform], filename]
+
+    return path.join('/')
   }
 
   const monthlyAppleEmojiUrl = computed(() => {
@@ -59,7 +51,6 @@ export const useEmoji = () => {
       name: currentEmoji.name,
       unicode: currentEmoji.unicode,
       platform: 'apple',
-      size: 240,
     })
   })
 

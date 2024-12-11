@@ -1,6 +1,6 @@
 import { Application } from '@oak/oak'
 import { getLogger } from '@logtape/logtape'
-import { env } from './config/env.js'
+import { env } from './env.js'
 import * as middleware from './middleware/index.ts'
 import * as routes from './routes/index.ts'
 import './logging.ts'

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { computed, defineComponent, onMounted } from 'vue'
-import { useEmoji } from '~/composables/useEmoji'
-import { weatherQueries } from '~/queries/index'
+import { useEmoji } from '~/hooks/useEmoji'
+import { weatherQueries } from '~/io/queries/index'
 import { getWeatherEmoji } from '~/utils/getWeatherEmoji'
 
 export default defineComponent({
@@ -51,7 +51,7 @@ export default defineComponent({
     })
 
     return () => (
-      <div class=' flex h-12 items-center gap-2 font-segoe text-white'>
+      <div class='flex h-12 items-center gap-2 font-segoe text-white'>
         {weather.value && (
           <img class='size-8' src={emojiUrl.value}/>
         )}

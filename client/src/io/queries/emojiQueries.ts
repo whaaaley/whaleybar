@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { withGet } from '~/promisePipelines/fetchPipeline'
+// import { withGet } from '~/io/chains/fetchPipeline'
+import { makeRequest } from '~/io/streams/ajaxStreams'
 
 type GetWeatherEmojiParams = {
   weatherCondition: string
@@ -20,14 +21,16 @@ type WeatherEmojiResponse = z.infer<typeof WeatherEmojiResponseSchema>
 // 2. If the API returns invalid data, Zod's parse() will throw regardless of the type cast
 // 3. The cast just helps TypeScript understand the shape of the data after Zod validates it
 export const emojiQueries = {
-  getWeatherEmoji: async (params: GetWeatherEmojiParams) => (
-    withGet.execute({
+  getWeatherEmoji: async (params: GetWeatherEmojiParams) => {
+    const data = makeRequest({
       url: '/api/weather-emoji',
       queryString: params,
       responseSchema: WeatherEmojiResponseSchema,
       headers: {
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
-    }) as Promise<WeatherEmojiResponse>
-  ),
+    })
+
+    return data as Promise<WeatherEmojiResponse>
+  },
 }

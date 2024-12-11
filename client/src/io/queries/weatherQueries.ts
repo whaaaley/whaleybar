@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { withGet } from '~/promisePipelines/fetchPipeline'
+import { makeRequest } from '~/io/streams/ajaxStreams'
 
 type GetWeatherParams = {
   location: string
@@ -20,7 +20,8 @@ type WeatherResponse = z.infer<typeof WeatherResponseSchema>
 // 3. The cast just helps TypeScript understand the shape of the data after Zod validates it
 export const weatherQueries = {
   getWeather: async (params: GetWeatherParams) => {
-    const { data } = await withGet.execute({
+    const data = await makeRequest({
+      method: 'GET',
       url: '/api/weather',
       queryString: params,
       responseSchema: WeatherResponseSchema,

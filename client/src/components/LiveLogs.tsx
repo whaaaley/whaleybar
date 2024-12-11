@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { cva } from 'class-variance-authority'
 import { computed, defineComponent, onMounted, ref } from 'vue'
-import { logStreamQueries } from '~/queries'
+import { logStreamQueries } from '~/io/queries'
+import { type MessageSchema } from '~/io/queries/logStreamQueries'
 
 const statusVariants = cva([
   'rounded px-2 text-black ',
@@ -38,16 +39,16 @@ const FormatLogLine = defineComponent({
 
     const statusClass = computed(() => (
       statusVariants({
-        level: props.line.data.level,
+        level: props.line.level,
       })
     ))
 
     return () => {
-      if (!props.line.data || typeof props.line.data === 'string') {
+      if (!props.line || typeof props.line === 'string') {
         return null
       }
 
-      const { category, level, timestamp, message, properties } = props.line.data
+      const { category, level, timestamp, message, properties } = props.line
 
       return (
         <div class='flex items-center gap-2 text-sm'>
@@ -75,13 +76,11 @@ export default defineComponent({
       enabled: false,
       queryKey: ['logs'],
       retry: false,
-      queryFn: () => (
-        logStreamQueries.connectLogs({
-          onMessage: (data) => {
-            return queryClient.setQueryData<MessageEvent[]>(['logs'], () => data)
-          },
+      queryFn: () => logStreamQueries.connectLogs((data) => {
+        queryClient.setQueryData(['logs'], (oldData: MessageSchema[] = []) => {
+          return [...oldData, data]
         })
-      ),
+      }),
     })
 
     const formattedError = computed(() => {
@@ -116,14 +115,20 @@ export default defineComponent({
       })
     }
 
+    const reconnect = () => logStreamQueries.reconnectLogs()
+
     return () => (
       <div class='m-8 h-96 rounded-lg border border-slate-800 px-4 py-3'>
+        {/* <pre>logs: {JSON.stringify(logs.value, null, 2)}</pre> */}
+        {/* <pre>showLogs: {JSON.stringify(showLogs.value, null, 2)}</pre> */}
         <pre>logsError: {JSON.stringify(formattedError.value, null, 2)}</pre>
         <pre>isLoading: {JSON.stringify(isLoadingLogs.value)}</pre>
         <pre class='grid gap-1'>
-          {showLogs.value && logs && logs.value?.map((line, index) => (
-            <FormatLogLine key={index} line={line}/>
-          ))}
+          {(showLogs.value && logs.value) && (
+            logs.value.map((line, index) => (
+              <FormatLogLine key={index} line={line}/>
+            ))
+          )}
         </pre>
         <input
           class='border bg-black'
@@ -131,6 +136,7 @@ export default defineComponent({
           v-model={logText.value}
           onKeyup={sendLog}
         />
+        <button onClick={reconnect}>Reconnect</button>
       </div>
     )
   },
