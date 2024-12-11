@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { getLogger } from '@logtape/logtape'
+// import { getLogger } from '@logtape/logtape'
 
-const logger = getLogger(['app'])
+// const logger = getLogger(['app'])
 
 const WeatherRes = z.object({
   condition: z.string(),
