@@ -1,5 +1,5 @@
 import { Context, Next } from '@oak/oak'
-import { env } from '../config/env.js'
+import { env } from '../env.js'
 
 interface Whitelist {
   [key: string]: {
@@ -23,6 +23,11 @@ if (env.ENV === 'development') {
   }
 
   whitelist['http://localhost:4201'] = {
+    methods: 'GET, POST, OPTIONS',
+    headers: 'Authorization, Content-Type, Cache-Control',
+  }
+
+  whitelist['http://asset.localhost'] = {
     methods: 'GET, POST, OPTIONS',
     headers: 'Authorization, Content-Type, Cache-Control',
   }

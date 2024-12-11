@@ -51,7 +51,7 @@ export default defineComponent({
     })
 
     return () => (
-      <div class=' flex h-12 items-center gap-2 font-segoe text-white'>
+      <div class='flex h-12 items-center gap-2 font-segoe text-white'>
         {weather.value && (
           <img class='size-8' src={emojiUrl.value}/>
         )}

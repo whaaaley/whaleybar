@@ -4,5 +4,5 @@ import { createLogStreamController } from '../controllers/logStreamController.ts
 const logStreamController = createLogStreamController()
 
 export const getLogStreamSink = () => (record: LogRecord) => {
-  logStreamController.sendEvent(record)
+  logStreamController.broadcast(record)
 }

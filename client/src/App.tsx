@@ -1,15 +1,23 @@
-import './index.css'
 import { VueQueryPlugin } from '@tanstack/vue-query'
-import { createApp, defineComponent, onMounted } from 'vue'
+import { computed, createApp, defineComponent, onMounted, ref } from 'vue'
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
-import * as zebar from 'zebar'
-import { LiveLogs, TimeDate, WeatherLocation } from '~/components'
+import { createProviderGroup, type GlazeWmOutput } from 'zebar'
+import { LiveLogs, MonitorGrid, TimeDate, WeatherLocation, WorkspaceGrid } from '~/components'
+import './index.css'
+
+declare global {
+  interface Window {
+    __TAURI_INTERNALS__?: unknown
+  }
+}
 
 const App = defineComponent({
   name: 'App',
   setup () {
     return () => (
-      <RouterView/>
+      <>
+        {import.meta.env.DEV ? <RouterView/> : <Zebar/>}
+      </>
     )
   },
 })
@@ -17,20 +25,34 @@ const App = defineComponent({
 const Zebar = defineComponent({
   name: 'Zebar',
   setup () {
-    onMounted(() => {
-      const providers = zebar.createProviderGroup({
-        glazewm: { type: 'glazewm' },
-        weather: { type: 'weather' },
-      })
+    const glazewm = ref<GlazeWmOutput | null>(null)
 
-      console.log(providers)
+    const allMonitors = computed(() => glazewm.value?.allMonitors ?? [])
+
+    const currentMonitor = computed(() => glazewm.value?.currentMonitor ?? null)
+    const monitorWorkspaces = computed(() => currentMonitor.value?.children ?? [])
+
+    onMounted(() => {
+      if (window.__TAURI_INTERNALS__) {
+        const providers = createProviderGroup({
+          glazewm: { type: 'glazewm' },
+        })
+
+        glazewm.value = providers.outputMap.glazewm
+
+        providers.onOutput(() => {
+          glazewm.value = providers.outputMap.glazewm
+          console.log('glazewm', glazewm.value)
+        })
+      }
     })
 
     return () => (
-      <div class='flex gap-4 px-14'>
+      <div class='flex h-screen items-center gap-4 px-6'>
         <TimeDate/>
         <WeatherLocation location='Des Moines, Iowa'/>
-        {/* <WeatherLocation location='Haywards Heath, UK'/> */}
+        <MonitorGrid monitors={allMonitors.value}/>
+        <WorkspaceGrid workspaces={monitorWorkspaces.value}/>
       </div>
     )
   },
@@ -65,12 +87,15 @@ const routes = [{
 
 const app = createApp(App)
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-})
+if (import.meta.env.DEV) {
+  const router = createRouter({
+    history: createWebHistory(),
+    routes,
+  })
 
-app.use(router)
+  app.use(router)
+}
+
 app.use(VueQueryPlugin)
 
 app.mount('#app')
