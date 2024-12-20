@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "build-watch": "vite build --watch",
+    "build-watch": "env BUILD_ENV=local vite build --watch",
     "dev": "vite"
   },
   "dependencies": {
