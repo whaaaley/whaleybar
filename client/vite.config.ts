@@ -4,7 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { defineConfig } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 
-const outDir = process.env.NODE_ENV === 'development'
+const outDir = process.env.BUILD_ENV === 'local'
   ? '/mnt/c/Users/dustin/.glzr/zebar/whaleybar-build'
   : undefined
 
