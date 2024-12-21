@@ -1,11 +1,12 @@
 import { type LogRequestSchema, logResponseSchema, messageSchema } from '$models/logStream.model'
 import { makeRequest } from '~/io/streams/fetch.streams'
-import { connect, disconnect } from '~/io/streams/sseStreams'
+import { connect, disconnect } from '~/io/streams/sse.streams'
 
 export type LogResponseSchema = z.infer<typeof logResponseSchema>
 export type MessageSchema = z.infer<typeof messageSchema>
 
 type NextFn = (data: unknown) => void
+
 let lastNext: NextFn | undefined
 
 export const connectLogs = async (next: NextFn) => {
