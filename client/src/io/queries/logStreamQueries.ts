@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { makeRequest } from '~/io/streams/ajaxStreams'
+import { makeRequest } from '~/io/streams/fetch.streams'
 import { connect, disconnect } from '~/io/streams/sseStreams'
 
 type SendLogParams = {

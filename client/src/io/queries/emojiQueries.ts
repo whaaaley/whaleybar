@@ -1,6 +1,5 @@
 import { z } from 'zod'
-// import { withGet } from '~/io/chains/fetchPipeline'
-import { makeRequest } from '~/io/streams/ajaxStreams'
+import { makeRequest } from '~/io/streams/fetch.streams'
 
 type GetWeatherEmojiParams = {
   weatherCondition: string
@@ -13,8 +12,6 @@ const WeatherEmojiResponseSchema = z.object({
 })
 
 type WeatherEmojiResponse = z.infer<typeof WeatherEmojiResponseSchema>
-
-// Todo: add middleware to swap out the URL based on the environment
 
 // Type casting with 'as Promise<WeatherEmojiResponse>' is safe here because:
 // 1. The Zod schema (WeatherEmojiResponseSchema) validates the data at runtime

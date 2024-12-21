@@ -21,6 +21,7 @@
     "jsr:@std/path@1": "1.0.7",
     "jsr:@std/path@^1.0.6": "1.0.7",
     "jsr:@std/testing@^1.0.3": "1.0.3",
+    "npm:@types/node@*": "22.5.4",
     "npm:openai@^4.68.4": "4.68.4",
     "npm:path-to-regexp@6.2.1": "6.2.1",
     "npm:zod@^3.23.8": "3.23.8"
