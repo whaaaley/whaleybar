@@ -11,7 +11,7 @@ const outDir = process.env.BUILD_ENV === 'local'
 export default defineConfig({
   build: {
     outDir,
-    sourcemap: true,
+    sourcemap: process.env.DEV,
   },
   plugins: [
     vue(),
