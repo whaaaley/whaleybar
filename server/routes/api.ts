@@ -1,6 +1,6 @@
 import { Router } from '@oak/oak'
-import * as controllers from '../controllers/index.ts'
-import models from '../models/index.ts'
+import * as controllers from '../modules/controllers.ts'
+import * as models from '../modules/models.ts'
 
 const router = new Router()
 

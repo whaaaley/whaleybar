@@ -1,4 +1,4 @@
-import { type LogRequestSchema, logResponseSchema, messageSchema } from '$models/logStream.model'
+import { type LogRequestSchema, logResponseSchema, messageSchema } from '$schemas/logStream.schema'
 import { makeRequest } from '~/io/streams/fetch.streams'
 import { connect, disconnect } from '~/io/streams/sse.streams'
 

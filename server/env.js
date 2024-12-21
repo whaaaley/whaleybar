@@ -1,4 +1,8 @@
+const ENV = Deno.env.get('ENV')
+
 export const env = {
-  ENV: Deno.env.get('ENV'),
+  ENV,
+  DEV: ENV === 'development',
+  PROD: ENV === 'production',
   PORT: Deno.env.get('PORT'),
 }

@@ -80,6 +80,27 @@ export default defineComponent({
       }),
     })
 
+    const logText = ref('')
+
+    const {
+      data: sendLogData,
+      error: sendLogError,
+      refetch: sendLogRefetch,
+      isLoading: isLoadingSendLog,
+    } = useQuery({
+      enabled: false,
+      queryKey: ['sendLog'],
+      retry: false,
+      queryFn: () => (
+        logStreamQueries.sendLog({
+          category: ['test'],
+          level: 'info',
+          message: [logText.value],
+          properties: {},
+        })
+      ),
+    })
+
     const formattedError = computed(() => {
       const error = logsError.value
 
@@ -100,16 +121,9 @@ export default defineComponent({
       !isLoadingLogs.value && Array.isArray(logs.value)
     ))
 
-    const logText = ref('')
     const sendLog = (event: KeyboardEvent) => {
       if (event.key !== 'Enter') return
-
-      logStreamQueries.sendLog({
-        category: ['test'],
-        level: 'info',
-        message: [logText.value],
-        properties: {},
-      })
+      sendLogRefetch()
     }
 
     const reconnect = () => logStreamQueries.reconnectLogs()
@@ -127,6 +141,9 @@ export default defineComponent({
             ))
           )}
         </pre>
+        {isLoadingSendLog.value && <div>Sending log...</div>}
+        {sendLogError.value && <div>Error sending log: {sendLogError.value.message}</div>}
+        <pre>sendLogData: {JSON.stringify(sendLogData.value, null, 2)}</pre>
         <input
           class='border bg-black'
           type='text'

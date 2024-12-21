@@ -1,7 +1,7 @@
 import { getLogger } from '@logtape/logtape'
 import { Context, ServerSentEvent, Status } from '@oak/oak'
-import { createSaltedHash } from '../utils/hash.util.ts'
-import { logRequestSchema } from '../models/logStream.model.ts'
+import { createSaltedHash } from '../../utils/hash.util.ts'
+import { logRequestSchema } from './logStream.schema.ts'
 
 const logger = getLogger(['app'])
 

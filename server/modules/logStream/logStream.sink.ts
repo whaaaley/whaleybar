@@ -1,5 +1,5 @@
 import { type LogRecord } from '@logtape/logtape'
-import { createLogStreamController } from '../controllers/logStream.controller.ts'
+import { createLogStreamController } from './logStream.controller.ts'
 
 const logStreamController = createLogStreamController()
 

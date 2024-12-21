@@ -1,4 +1,5 @@
-import { type WeatherRequest, type WeatherResponse, weatherResponseSchema } from '$models/weather.model'
+import { type WeatherRequest, type WeatherResponse, weatherResponseSchema } from '$schemas/weather.schema'
+// import { type WeatherRequest, type WeatherResponse, weatherResponseSchema } from '../../../../server/modules/weather/weather.schema.ts'
 import { makeRequest } from '~/io/streams/fetch.streams'
 
 // Type casting with 'as Promise<WeatherResponse>' is safe here because:

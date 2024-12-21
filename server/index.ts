@@ -1,8 +1,8 @@
 import { Application } from '@oak/oak'
 import { getLogger } from '@logtape/logtape'
 import { env } from './env.js'
-import * as middleware from './middleware/index.ts'
-import * as routes from './routes/index.ts'
+import * as middleware from './middleware.ts'
+import * as routes from './routes.ts'
 import './logging.ts'
 
 const app = new Application()
@@ -10,6 +10,7 @@ const logger = getLogger(['app'])
 
 app.use(middleware.errorMiddleware)
 app.use(middleware.loggerMiddleware)
+app.use(middleware.rateLimitMiddleware())
 app.use(middleware.corsMiddleware)
 
 app.use(middleware.staticFileMiddleware)

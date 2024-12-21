@@ -1,6 +1,6 @@
 import { type Context, Status } from '@oak/oak'
 import { getLogger } from '@logtape/logtape'
-import { type WeatherRequest, weatherRequestSchema, type WeatherResponse } from '../models/weather.model.ts'
+import { type WeatherRequest, weatherRequestSchema, type WeatherResponse } from './weather.schema.ts'
 
 const logger = getLogger(['app'])
 

@@ -40,6 +40,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/vite-env.d.ts"
+    "src/vite-env.d.ts",
+    "../server/**/*.ts"
   ]
 }

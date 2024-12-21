@@ -1,5 +1,5 @@
 import { configure, getConsoleSink } from '@logtape/logtape'
-import { getLogStreamSink } from './sinks/logStream.sink.ts'
+import { getLogStreamSink } from './modules/logStream/logStream.sink.ts'
 
 await configure({
   sinks: {
