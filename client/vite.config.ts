@@ -24,6 +24,9 @@ export default defineConfig({
       $: fileURLToPath(new URL('..', import.meta.url)),
       $models: fileURLToPath(new URL('../server/models', import.meta.url)),
     },
+    // Dedupe ensures the same instance of zod is used everywhere it's imported
+    // in the build
+    dedupe: ['zod'],
   },
   server: {
     port: 4200,
