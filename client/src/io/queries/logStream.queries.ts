@@ -1,27 +1,11 @@
-import { z } from 'zod'
+import { type LogRequestSchema, logResponseSchema, messageSchema } from '$models/logStream.model'
 import { makeRequest } from '~/io/streams/fetch.streams'
 import { connect, disconnect } from '~/io/streams/sseStreams'
 
-type SendLogParams = {
-  category: string[]
-  level: 'debug' | 'info' | 'warn' | 'error' | 'fatal'
-  message: string[]
-  properties: unknown
-}
-
-const MessageSchema = z.object({
-  category: z.array(z.string()),
-  level: z.enum(['debug', 'info', 'warn', 'error', 'fatal']),
-  timestamp: z.number(),
-  message: z.array(z.string()),
-  rawMessage: z.string(),
-  properties: z.unknown(),
-})
-
-export type MessageSchema = z.infer<typeof MessageSchema>
+export type LogResponseSchema = z.infer<typeof logResponseSchema>
+export type MessageSchema = z.infer<typeof messageSchema>
 
 type NextFn = (data: unknown) => void
-
 let lastNext: NextFn | undefined
 
 export const connectLogs = async (next: NextFn) => {
@@ -29,7 +13,7 @@ export const connectLogs = async (next: NextFn) => {
 
   const data = await connect({
     url: '/stream/logs',
-    messageSchema: MessageSchema,
+    messageSchema,
     next,
     error: (err) => { throw err },
   })
@@ -38,9 +22,7 @@ export const connectLogs = async (next: NextFn) => {
 }
 
 export const disconnectLogs = () => {
-  disconnect({
-    url: '/stream/logs',
-  })
+  disconnect({ url: '/stream/logs' })
 }
 
 export const reconnectLogs = async (next?: NextFn) => {
@@ -53,12 +35,16 @@ export const reconnectLogs = async (next?: NextFn) => {
   return connectLogs(next ?? lastNext!)
 }
 
-export const sendLog = async (params: SendLogParams) => {
+export const sendLog = async (params: LogRequestSchema) => {
   const data = await makeRequest({
+    method: 'POST',
     url: '/api/log',
-    responseSchema: z.unknown(),
+    responseSchema: logResponseSchema,
     body: JSON.stringify(params),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
 
-  return data as Promise<void>
+  return data as Promise<LogResponseSchema>
 }

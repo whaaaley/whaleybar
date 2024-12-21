@@ -1,2 +1,2 @@
-export * as logStreamQueries from './logStreamQueries'
-export { weatherQueries } from './weather.queries'
+export * as logStreamQueries from './logStream.queries'
+export * as weatherQueries from './weather.queries'

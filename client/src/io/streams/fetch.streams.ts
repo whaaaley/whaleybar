@@ -1,7 +1,7 @@
 import { lastValueFrom, map, of, pipe, switchMap } from 'rxjs'
 import { fromFetch } from 'rxjs/fetch'
 import { type ZodSchema } from 'zod'
-import { http, marshal, prefixUrl, unmarshal, zod } from '~/io/operators/requestOperators'
+import { http, marshal, prefixUrl, unmarshal, zod } from '~/io/operators/request.operators'
 
 type RequestConfig = RequestInit & {
   url: string

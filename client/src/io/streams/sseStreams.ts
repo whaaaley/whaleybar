@@ -1,6 +1,6 @@
 import { fromEvent, lastValueFrom, map, of, pipe, switchMap, tap } from 'rxjs'
 import { type ZodSchema } from 'zod'
-import { prefixUrl } from '~/io/operators/requestOperators'
+import { prefixUrl } from '~/io/operators/request.operators'
 import { logging, unmarshal, zod } from '~/io/operators/streamOperators'
 
 type ConnectConfig = {
