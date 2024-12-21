@@ -6,7 +6,8 @@ export default defineComponent({
   name: 'TimeDate',
   setup () {
     const { monthlyAppleEmojiUrl } = useEmoji()
-    const now = useNow()
+
+    const now = useNow({ interval: 1000 })
 
     const timeFormat = useDateFormat(now, 'h:mm')
     const dateFormat = useDateFormat(now, 'MM/DD/YYYY')

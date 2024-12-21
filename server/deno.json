@@ -15,10 +15,11 @@
     "@oak/oak": "jsr:@oak/oak@^17.1.0",
     "@std/assert": "jsr:@std/assert@^1.0.6",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.2",
-    "@std/encoding": "jsr:@std/encoding@^1.0.5",
+    "@std/encoding": "jsr:@std/encoding@^1.0.6",
     "@std/path": "jsr:@std/path@^1.0.6",
-    "@std/testing": "jsr:@std/testing@^1.0.3",
+    "@std/testing": "jsr:@std/testing@^1.0.8",
     "openai": "npm:openai@^4.68.4",
+    "rxjs": "npm:rxjs@^7.8.1",
     "zod": "npm:zod@^3.23.8"
   }
 }

@@ -43,14 +43,28 @@ export const errorMiddleware = async (ctx: Context, next: Next) => {
     const isDev = env.ENV === 'development'
 
     if (err instanceof z.ZodError) {
-      ctx.response.status = Status.BadRequest
-      ctx.response.body = formatZodError(err)
-      return
+      // ctx.response.status = Status.BadRequest
+      // ctx.response.body = formatZodError(err)
+      // return
+
+      return new Response(JSON.stringify(formatZodError(err)), {
+        status: Status.BadRequest,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
     }
 
     const error = err as ErrorType
 
-    ctx.response.status = 'status' in error ? error.status : Status.InternalServerError
-    ctx.response.body = formatError(error, isDev)
+    // ctx.response.status = 'status' in error ? error.status : Status.InternalServerError
+    // ctx.response.body = formatError(error, isDev)
+
+    return new Response(JSON.stringify(formatError(error, isDev)), {
+      status: 'status' in error ? error.status : Status.InternalServerError,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
   }
 }

@@ -1,30 +1,13 @@
 import { getLogger } from '@logtape/logtape'
 import { Context, ServerSentEvent, Status } from '@oak/oak'
-import { z } from 'zod'
+import { createSaltedHash } from '../utils/hash.util.ts'
+import { logRequestSchema } from '../models/logStream.model.ts'
 
 const logger = getLogger(['app'])
 
-// Salt used for one-way hashing of IP addresses for privacy
-const bytes = crypto.getRandomValues(new Uint8Array(16))
-const salt = Array.from(bytes)
-  .map((b) => b.toString(16).padStart(2, '0'))
-  .join('')
-
-// Creates a consistent but anonymized identifier from an IP address
-const anonymizeIp = async (ip: string): Promise<string> => {
-  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ip))
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-    .slice(0, 16)
-}
-
-const LogRequestSchema = z.object({
-  category: z.array(z.string()),
-  level: z.enum(['debug', 'info', 'warn', 'error', 'fatal']),
-  message: z.array(z.string()),
-  properties: z.unknown(),
-})
+// type LogStreamDeps = {
+//   // Add dependencies here
+// }
 
 type Connection = {
   target: EventTarget
@@ -34,12 +17,12 @@ type Connection = {
 // Maps anonymized client IDs to their SSE connections
 const activeConnections = new Map<string, Connection>()
 
-export const createLogStreamController = () => ({
+export const createLogStreamController = (/* deps: LogStreamDeps */) => ({
   connect: async (ctx: Context) => {
     const { request: req } = ctx
     ctx.response.status = 200
 
-    const clientId = await anonymizeIp(req.ip)
+    const clientId = await createSaltedHash(req.ip)
     const existing = activeConnections.get(clientId)
 
     if (existing) {
@@ -75,10 +58,15 @@ export const createLogStreamController = () => ({
     const { response: res, request: req } = ctx
 
     const body = await req.body.json()
-    const validated = LogRequestSchema.parse(body)
+    const validated = logRequestSchema.parse(body)
 
     logger[validated.level](validated.message.join(', '))
+
     res.status = Status.OK
+    res.body = { status: 'success' }
+
+    // Return the response so we can test the controller
+    return res
   },
   broadcast: (data: unknown) => {
     const event = new ServerSentEvent('message', { data })
@@ -86,5 +74,8 @@ export const createLogStreamController = () => ({
     for (const { target } of activeConnections.values()) {
       target.dispatchEvent(event)
     }
+
+    // Return the data so we can test the controller
+    return data
   },
 })

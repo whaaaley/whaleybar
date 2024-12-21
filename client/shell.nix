@@ -2,12 +2,11 @@
 
 pkgs.mkShell {
   buildInputs = with pkgs; [
-    deno
-    tmux
+    nodejs_20
   ];
 
   shellHook = ''
-    echo "🚀 Starting whaleybar development environment..."
-    sh tmux.sh
+    echo "🚀 Starting whaleybar client..."
+    npm run dev
   '';
 }

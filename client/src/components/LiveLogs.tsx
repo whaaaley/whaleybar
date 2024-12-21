@@ -16,9 +16,6 @@ const statusVariants = cva([
       fatal: 'bg-fuchsia-600',
     },
   },
-  compoundVariants: [
-    // {}
-  ],
   defaultVariants: {
     level: 'info',
   },

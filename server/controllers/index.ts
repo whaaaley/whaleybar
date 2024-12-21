@@ -1,3 +1,3 @@
-export { createEmojiController } from './emojiController.ts'
-export { createWeatherController } from './weatherController.ts'
-export { createLogStreamController } from './logStreamController.ts'
+export { createEmojiController } from './emoji.controller.ts'
+export { createLogStreamController } from './logStream.controller.ts'
+export { createWeatherController } from './weather.controller.ts'

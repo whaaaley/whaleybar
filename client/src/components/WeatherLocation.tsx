@@ -1,19 +1,45 @@
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useNow } from '@vueuse/core'
 import { computed, defineComponent, onMounted } from 'vue'
 import { useEmoji } from '~/hooks/useEmoji'
 import { weatherQueries } from '~/io/queries/index'
-import { getWeatherEmoji } from '~/utils/getWeatherEmoji'
+import { getWeatherEmoji } from '~/utils/emoji.utils'
 
 export default defineComponent({
   name: 'WeatherLocation',
   props: {
+    includeTime: {
+      type: Boolean,
+      default: false,
+    },
     location: {
       type: String,
       default: 'Des Moines, Iowa',
     },
+    label: {
+      type: [String, null],
+      default: null,
+    },
+    timezone: {
+      type: String,
+      default: 'America/Chicago',
+    },
   },
   setup (props) {
     const { getEmoji } = useEmoji()
+    const queryClient = useQueryClient()
+
+    const now = useNow({ interval: 1000 })
+
+    const timezoneNow = computed(() => {
+      const date = now.value
+
+      return date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZone: props.timezone,
+      })
+    })
 
     const {
       data: weather,
@@ -31,6 +57,7 @@ export default defineComponent({
     })
 
     const isLoading = computed(() => isLoadingWeather.value)
+    const labelValue = computed(() => isLoading.value ? '' : (props.label ?? props.location))
 
     const emojiUrl = computed(() => {
       if (!weather.value) return
@@ -48,6 +75,12 @@ export default defineComponent({
 
     onMounted(async () => {
       await refetchWeather()
+
+      // 3600000 ms = 1 hour
+      setInterval(async () => {
+        queryClient.resetQueries({ queryKey: [props.location] })
+        await refetchWeather()
+      }, 3600000)
     })
 
     return () => (
@@ -63,12 +96,18 @@ export default defineComponent({
         )}
         <div class='grid text-xs'>
           {weather.value && (
-            <div>{weather.value.temp}°F {weather.value.condition}</div>
+            <div>
+              <span>{weather.value.temp}°F {weather.value.condition}</span>
+              {props.includeTime && (
+                // <span> ({timezoneNow.value})</span>
+                <span> / {timezoneNow.value}</span>
+              )}
+            </div>
           )}
           {weatherError.value && (
             <div>{weatherError.value.message}</div>
           )}
-          <div>{props.location}</div>
+          <div>{labelValue.value}</div>
         </div>
       </div>
     )
