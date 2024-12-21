@@ -15,9 +15,7 @@ const App = defineComponent({
   name: 'App',
   setup () {
     return () => (
-      <>
-        {import.meta.env.DEV ? <RouterView/> : <Zebar/>}
-      </>
+      <RouterView/>
     )
   },
 })
@@ -92,15 +90,12 @@ const routes = [{
 
 const app = createApp(App)
 
-if (import.meta.env.DEV) {
-  const router = createRouter({
-    history: createWebHistory(),
-    routes,
-  })
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
 
-  app.use(router)
-}
-
+app.use(router)
 app.use(VueQueryPlugin)
 
 app.mount('#app')
