@@ -1,5 +1,5 @@
 import { Context, Next } from '@oak/oak'
-import { env } from '../env.js'
+import { env } from '../../env.ts'
 
 interface Whitelist {
   [key: string]: {

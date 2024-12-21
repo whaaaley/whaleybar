@@ -1,4 +1,4 @@
-import { env } from '../../env.js'
+import { env } from '../../../env.ts'
 import { type WeatherRequest, type WeatherResponse, weatherResponseSchema } from './weather.schema.ts'
 
 export const getWeather = async (params: WeatherRequest): Promise<WeatherResponse> => {

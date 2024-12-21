@@ -1,5 +1,5 @@
 import { Context, HttpError, Next, Status } from '@oak/oak'
-import { env } from '../env.js'
+import { env } from '../../env.ts'
 import { z } from 'zod'
 
 type ErrorType = HttpError | Error
