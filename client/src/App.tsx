@@ -83,7 +83,6 @@ const routes = [{
     setup () {
       return () => (
         <div class='h-screen overflow-auto bg-black text-white'>
-          <Zebar/>
           <LiveLogs/>
         </div>
       )
