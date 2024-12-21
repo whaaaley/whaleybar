@@ -15,12 +15,6 @@ const logStreamController = controllers.createLogStreamController()
 router.post('/api/log', logStreamController.emit)
 router.get('/stream/logs', logStreamController.connect)
 
-// const emojiController = controllers.createEmojiController({
-//   getWeatherEmoji: models.emojiModel.getWeatherEmoji,
-// })
-//
-// router.get('/api/weather-emoji', emojiController.getWeatherEmoji)
-
 const weatherController = controllers.createWeatherController({
   getWeather: models.weatherModel.getWeather,
 })
