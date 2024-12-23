@@ -1,7 +1,7 @@
 import { VueQueryPlugin } from '@tanstack/vue-query'
 import { createApp, defineComponent } from 'vue'
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
-import { GlazeGrids, LiveLogs, TimeDate } from '~/components'
+import { GlazeGrids, LiveLogs, TimeDate, WeatherLocation } from '~/components'
 import './index.css'
 
 const App = defineComponent({
@@ -21,13 +21,13 @@ const Zebar = defineComponent({
     return () => (
       <div class='flex h-screen items-center gap-4 bg-gradient-to-b from-transparent to-black/50 px-6'>
         <TimeDate/>
-        {/* <WeatherLocation location='Des Moines, Iowa'/>
+        <WeatherLocation location='Des Moines, Iowa'/>
         <WeatherLocation
           includeTime
           label='Haywards Heath, UK'
           location='RH16'
           timezone='Europe/London'
-        /> */}
+        />
         <GlazeGrids/>
       </div>
     )
