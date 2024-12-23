@@ -1,16 +1,13 @@
 {
 	"folders": [
 		{
-			"name": "client",
 			"path": "client"
 		},
 		{
-			"name": "server",
 			"path": "server"
 		},
 		{
-			"name": "whaleybar",
-			"path": ".",
+			"path": "."
 		},
 		{
 			"path": "../../../mnt/c/Users/dustin/.glzr/zebar/whaleybar-bootstrap"
@@ -38,13 +35,14 @@
 			"tabler",
 			"tailwindcss",
 			"tanstack",
+			"TAURI",
 			"tmuxinator",
 			"tseslint",
 			"unmarshal",
 			"unplugin",
 			"vueuse",
 			"whaleybar",
-			"Zebar"
+			"zebar"
 		]
 	}
 }

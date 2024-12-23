@@ -1,26 +1,25 @@
 import { z } from 'zod'
 
-export const logRequestSchema = z.object({
+export const logStreamRequestSchema = z.object({
   category: z.array(z.string()),
   level: z.enum(['debug', 'info', 'warn', 'error', 'fatal']),
   message: z.array(z.string()),
-  properties: z.unknown(),
+  properties: z.record(z.string(), z.unknown()),
 })
 
-export const logResponseSchema = z.object({
+export const logStreamResponseSchema = z.object({
   status: z.enum(['success', 'error']),
 })
 
-export const messageSchema = z.object({
+export const logStreamMessageSchema = z.object({
   category: z.array(z.string()),
   level: z.enum(['debug', 'info', 'warn', 'error', 'fatal']),
   timestamp: z.number(),
   message: z.array(z.string()),
   rawMessage: z.string(),
-  properties: z.unknown(),
+  properties: z.record(z.string(), z.unknown()),
 })
 
-export type LogRequestSchema = z.infer<typeof logRequestSchema>
-export type LogResponseSchema = z.infer<typeof logResponseSchema>
-
-export type MessageSchema = z.infer<typeof messageSchema>
+export type LogStreamRequest = z.infer<typeof logStreamRequestSchema>
+export type LogStreamResponse = z.infer<typeof logStreamResponseSchema>
+export type LogStreamMessage = z.infer<typeof logStreamMessageSchema>

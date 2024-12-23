@@ -25,8 +25,6 @@ type ZodContext = {
 
 export function zod<T extends ZodContext> (context: T): T {
   try {
-    // context.data = context.messageSchema.parse(context.data)
-    // return context
     return {
       ...context,
       data: context.messageSchema.parse(context.data),

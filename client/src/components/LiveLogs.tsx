@@ -1,8 +1,8 @@
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/vue-query'
 import { cva } from 'class-variance-authority'
 import { computed, defineComponent, onMounted, ref } from 'vue'
-import { logStreamQueries } from '~/io/queries'
-import { type MessageSchema } from '~/io/queries/logStreamQueries'
+import { useLogStream } from '~/hooks'
+import { logStreamQueries } from '~/io/queries/logStream.queries'
 
 const statusVariants = cva([
   'rounded px-2 text-black ',
@@ -45,7 +45,7 @@ const FormatLogLine = defineComponent({
         return null
       }
 
-      const { category, level, timestamp, message, properties } = props.line
+      const { category, level, timestamp, message } = props.line
 
       return (
         <div class='flex items-center gap-2 text-sm'>
@@ -62,23 +62,7 @@ const FormatLogLine = defineComponent({
 export default defineComponent({
   name: 'LiveLogs',
   setup () {
-    const queryClient = useQueryClient()
-
-    const {
-      data: logs,
-      error: logsError,
-      refetch: refetchLogs,
-      isLoading: isLoadingLogs,
-    } = useQuery({
-      enabled: false,
-      queryKey: ['logs'],
-      retry: false,
-      queryFn: () => logStreamQueries.connectLogs((data) => {
-        queryClient.setQueryData(['logs'], (oldData: MessageSchema[] = []) => {
-          return [...oldData, data]
-        })
-      }),
-    })
+    const { data: logs, error: logsError, refetch: refetchLogs, isLoading: isLoadingLogs } = useLogStream()
 
     const logText = ref('')
 

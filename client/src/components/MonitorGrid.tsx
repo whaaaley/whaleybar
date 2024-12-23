@@ -1,6 +1,7 @@
 import { cva } from 'class-variance-authority'
-import { type Monitor } from 'glazewm'
+// import { type Monitor } from 'glazewm'
 import { computed, defineComponent } from 'vue'
+import { type GlazeConfig } from '~/hooks/useGlaze'
 
 const monitorVariants = cva([
   'flex aspect-video w-10 rounded text-xs text-white *:m-auto',
@@ -17,7 +18,7 @@ const monitorVariants = cva([
 })
 
 type MonitorGridProps = {
-  monitors: Monitor[]
+  monitors: GlazeConfig['allMonitors']
 }
 
 export default defineComponent<MonitorGridProps>({
