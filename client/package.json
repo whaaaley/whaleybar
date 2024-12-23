@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "build": "vite build",
-    "build-watch": "env BUILD_ENV=local vite build --watch --emptyOutDir",
-    "dev": "vite"
+    "build-zebar": "vite build --mode zebar --emptyOutDir",
+    "build-zebar-watch": "vite build --mode zebar-watch --watch --emptyOutDir"
   },
   "dependencies": {
     "@logtape/logtape": "^0.8.0",
