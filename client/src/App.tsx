@@ -9,7 +9,7 @@ const App = defineComponent({
   setup () {
     return () => (
       <>
-        {import.meta.env.VITE_ZEBAR ? <Zebar/> : <RouterView/>}
+        {import.meta.env.VITE_ZEBAR === 'true' ? <Zebar/> : <RouterView/>}
       </>
     )
   },
