@@ -1,21 +1,17 @@
 import { useQuery } from '@tanstack/vue-query'
-import { defineComponent, onMounted } from 'vue'
+import { computed, defineComponent, onMounted } from 'vue'
 import { MonitorGrid, WorkspaceGrid } from '~/components'
-import { useLogStream } from '~/hooks'
+import { useEmoji, useLogStream } from '~/hooks'
 import { useGlaze } from '~/hooks/useGlaze'
 import { logStreamQueries } from '~/io/queries/logStream.queries'
 
 export default defineComponent({
   name: 'GlazeGrids',
   setup () {
-    const {
-      data: logs,
-      error: logsError,
-      refetch: logStreamConnect,
-      isLoading: isLoadingLogs,
-    } = useLogStream()
+    const { error: logsError, refetch: logStreamConnect } = useLogStream()
+    const { getEmoji } = useEmoji()
 
-    const { data, error, refetch, isLoading } = useQuery({
+    const { error, refetch } = useQuery({
       enabled: false,
       queryKey: ['initConfig'],
       queryFn: () => {
@@ -47,6 +43,16 @@ export default defineComponent({
       }
     })
 
+    const errorValue = computed(() => logsError.value || error.value)
+    const errorEmojiUrl = getEmoji({ name: 'question-mark', unicode: '2753' })
+
+    const ErrorIcon = () => (
+      <div class='flex gap-2 text-white'>
+        <img class='size-8' src={errorEmojiUrl}/>
+        <div>{errorValue.value}</div>
+      </div>
+    )
+
     const Grids = () => (
       <>
         <MonitorGrid monitors={allMonitors.value}/>
@@ -56,15 +62,7 @@ export default defineComponent({
 
     return () => (
       <>
-        {isLoading.value ? <div>Loading...</div> : <Grids/>}
-        <div class='flex flex-col gap-2 text-sm text-white'>
-          <div>
-            {logsError.value ? `Error: ${logsError.value.message}` : 'no log stream error'}
-          </div>
-          <div>
-            {error.value ? `Error: ${error.value.message}` : 'no error sending log'}
-          </div>
-        </div>
+        {errorValue.value ? <ErrorIcon/> : <Grids/>}
       </>
     )
   },

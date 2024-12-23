@@ -45,7 +45,7 @@ const FormatLogLine = defineComponent({
         return null
       }
 
-      const { category, level, timestamp, message, properties } = props.line
+      const { category, level, timestamp, message } = props.line
 
       return (
         <div class='flex items-center gap-2 text-sm'>

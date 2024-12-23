@@ -29,22 +29,24 @@ export const createLogStreamController = () => ({
     }
 
     const target = await ctx.sendEvents()
-    const heartbeat = new ServerSentEvent('heartbeat')
 
     // Prevents connection timeout by sending periodic heartbeats
+    const heartbeat = new ServerSentEvent('heartbeat')
     const interval = setInterval(() => {
       target.dispatchEvent(heartbeat)
       log.info('heartbeat', { heartbeat: true })
     }, 30000)
 
     activeConnections.set(clientId, { target, interval })
-    log.info(`New connection established for client: ${clientId}`, {
-      type: 'new-connection',
-    })
 
     // Outgoing events are broadcasted to the client
     outgoingEvents.subscribe((data) => {
       target.dispatchEvent(new ServerSentEvent('message', { data }))
+    })
+
+    // Log the new connection
+    log.info(`New connection established for client: ${clientId}`, {
+      type: 'new-connection',
     })
 
     // Ensures connection resources are properly cleaned up on disconnect

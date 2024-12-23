@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority'
-import { type Workspace } from 'glazewm'
 import { defineComponent } from 'vue'
+import { type GlazeConfig } from '~/hooks/useGlaze'
 
 const workspaceVariants = cva([
   'flex rounded px-3 py-2 text-xs text-white *:m-auto',
@@ -17,7 +17,7 @@ const workspaceVariants = cva([
 })
 
 type WorkspaceGridProps = {
-  workspaces: Workspace[]
+  workspaces: GlazeConfig['monitorWorkspaces']
 }
 
 export default defineComponent<WorkspaceGridProps>({

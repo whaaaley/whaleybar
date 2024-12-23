@@ -1,12 +1,11 @@
-import {
-  type LogStreamMessageSchema,
-  logStreamMessageSchema,
-  type LogStreamRequestSchema,
-  type LogStreamResponseSchema,
-  logStreamResponseSchema,
-} from '$schemas'
+import { z } from 'zod'
+import { logStreamMessageSchema, logStreamRequestSchema, logStreamResponseSchema } from '$schemas'
 import { makeRequest } from '~/io/streams/fetch.streams'
 import { connect, disconnect } from '~/io/streams/sse.streams'
+
+type LogStreamRequest = z.infer<typeof logStreamRequestSchema>
+type LogStreamResponse = z.infer<typeof logStreamResponseSchema>
+type LogStreamMessage = z.infer<typeof logStreamMessageSchema>
 
 type NextFn = (data: unknown) => void
 
@@ -22,7 +21,7 @@ export const connectLogs = async (next: NextFn) => {
     error: (err) => { throw err },
   })
 
-  return [data] as Promise<LogStreamMessageSchema>[]
+  return [data] as Promise<LogStreamMessage>[]
 }
 
 export const disconnectLogs = () => {
@@ -40,7 +39,7 @@ export const reconnectLogs = async (next?: NextFn) => {
   return connectLogs(nextFn)
 }
 
-export const sendLog = async (params: LogStreamRequestSchema) => {
+export const sendLog = async (params: LogStreamRequest) => {
   const data = await makeRequest({
     method: 'POST',
     url: '/api/log',
@@ -51,7 +50,7 @@ export const sendLog = async (params: LogStreamRequestSchema) => {
     },
   })
 
-  return data as Promise<LogStreamResponseSchema>
+  return data as Promise<LogStreamResponse>
 }
 
 export const logStreamQueries = {

@@ -25,8 +25,6 @@ type ZodContext = {
 
 export function zod<T extends ZodContext> (context: T): T {
   try {
-    // context.data = context.messageSchema.parse(context.data)
-    // return context
     return {
       ...context,
       data: context.messageSchema.parse(context.data),
@@ -45,13 +43,6 @@ type LoggingContext = {
 }
 
 export function logging<T extends LoggingContext> (context: T): T {
-  // console.log(JSON.stringify(context.data, null, 2))
-  // console.log(JSON.stringify(context.data))
-  console.log(
-    context.data?.category,
-    context.data?.level,
-    context.data?.message,
-    context.data?.properties,
-  )
+  console.log(JSON.stringify(context.data, null, 2))
   return context
 }

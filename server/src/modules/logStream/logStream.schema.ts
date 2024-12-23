@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-// Todo: Log messages should be the LogRecord type from @logtape/logtape
-
 export const logStreamRequestSchema = z.object({
   category: z.array(z.string()),
   level: z.enum(['debug', 'info', 'warn', 'error', 'fatal']),
@@ -22,7 +20,6 @@ export const logStreamMessageSchema = z.object({
   properties: z.record(z.string(), z.unknown()),
 })
 
-export type LogStreamRequestSchema = z.infer<typeof logStreamRequestSchema>
-export type LogStreamResponseSchema = z.infer<typeof logStreamResponseSchema>
-
-export type LogStreamMessageSchema = z.infer<typeof logStreamMessageSchema>
+export type LogStreamRequest = z.infer<typeof logStreamRequestSchema>
+export type LogStreamResponse = z.infer<typeof logStreamResponseSchema>
+export type LogStreamMessage = z.infer<typeof logStreamMessageSchema>

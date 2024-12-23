@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { type LogStreamMessageSchema } from '$schemas'
+import { type LogStreamMessage } from '$schemas'
 import { glazeConfigEventBus } from '~/hooks/useGlaze'
 import { logStreamQueries } from '~/io/queries/logStream.queries'
 
@@ -11,7 +11,7 @@ export const useLogStream = () => {
     queryKey: ['logStream'],
     retry: false,
     queryFn: () => (
-      logStreamQueries.connectLogs((data: LogStreamMessageSchema) => {
+      logStreamQueries.connectLogs((data: LogStreamMessage) => {
         const { category, properties } = data
 
         if (category.includes('glaze') && properties.type === 'glaze-config-update') {
@@ -21,7 +21,7 @@ export const useLogStream = () => {
           })
         }
 
-        queryClient.setQueryData(['logStream'], (oldData: LogStreamMessageSchema[] = []) => {
+        queryClient.setQueryData(['logStream'], (oldData: LogStreamMessage[] = []) => {
           return [...oldData, data].slice(-20)
         })
       })

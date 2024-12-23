@@ -1,16 +1,19 @@
 import { getLogger } from '@logtape/logtape'
 import { Subject } from 'rxjs'
-import { type LogStreamMessageSchema } from './logStream.schema.ts'
+import { type LogStreamMessage, type LogStreamRequest } from './logStream.schema.ts'
 
 const log = getLogger(['app'])
 const glazeLog = getLogger(['glaze'])
 
-type Message = LogStreamMessageSchema
+export const incomingEvents = new Subject<LogStreamRequest>()
+export const outgoingEvents = new Subject<LogStreamMessage>()
 
-export const incomingEvents = new Subject<Message>()
-export const outgoingEvents = new Subject<Message>()
+type AppState = {
+  hasConfig: boolean
+  glazeConfig: unknown | null
+}
 
-const state = {
+const state: AppState = {
   hasConfig: false,
   glazeConfig: null,
 }
@@ -20,9 +23,7 @@ incomingEvents.subscribe((event) => {
 
   if (category.includes('glaze') && properties.type === 'set-config') {
     log.info('Receive glaze config')
-    // console.log('glz', properties.glazeConfig.allMonitors.find((m) => m.hasFocus))
 
-    // Todo: Narrow down specific properties that are allowed to be set in the config
     state.hasConfig = true
     state.glazeConfig = properties.glazeConfig
 
@@ -36,17 +37,11 @@ incomingEvents.subscribe((event) => {
 outgoingEvents.subscribe((event) => {
   const { category, properties } = event
 
-  if (category.includes('info') && properties.type === 'new-connection') {
+  if (category.includes('app') && properties.type === 'new-connection') {
     if (state.hasConfig) {
-      glazeLog.info('Sending glaze configuration to new client', {
-        type: 'request-config-update',
-        connectionId: properties.connectionId,
+      glazeLog.info('Broadcasting existing glaze config to new client', {
+        type: 'glaze-config-update',
         glazeConfig: state.glazeConfig,
-      })
-    } else {
-      glazeLog.info('Glaze configuration not initialized yet', {
-        type: 'request-config-init',
-        connectionId: properties.connectionId,
       })
     }
   }

@@ -1,17 +1,28 @@
 import { filter, map, Subject } from 'rxjs'
 import { computed, ref } from 'vue'
-import { createProviderGroup, type GlazeWmOutput } from 'zebar'
+import { createProviderGroup } from 'zebar'
 
-type GlazeConfig = GlazeWmOutput | null
+export type GlazeConfig = {
+  allMonitors: {
+    id: string
+    hasFocus: boolean
+  }[]
+  monitorWorkspaces: {
+    id: string
+    displayName: string
+    hasFocus: boolean
+  }[]
+}
 
 type Event = {
   type: string
   config: GlazeConfig
 }
 
-const glazeConfig = ref<GlazeConfig>(null)
-export const glazeConfigEventBus = new Subject<Event>()
+const glazeConfig = ref<GlazeConfig | null>(null)
 const lastMonitorId = ref<string | null>(null)
+
+export const glazeConfigEventBus = new Subject<Event>()
 
 glazeConfigEventBus.pipe(
   filter(event => event.type === 'glaze-config-update'),
@@ -25,10 +36,6 @@ type UseGlazeOptions = {
 }
 
 export const useGlaze = (options: UseGlazeOptions) => {
-  const allMonitors = computed(() => glazeConfig.value?.allMonitors ?? [])
-  const currentMonitor = computed(() => glazeConfig.value?.currentMonitor ?? null)
-  const monitorWorkspaces = computed(() => currentMonitor.value?.children ?? [])
-
   const initialize = () => {
     if (window.__TAURI_INTERNALS__) {
       const providers = createProviderGroup({
@@ -36,15 +43,37 @@ export const useGlaze = (options: UseGlazeOptions) => {
       })
 
       const glazeNext = () => {
+        const { allMonitors, currentMonitor } = providers.outputMap.glazewm ?? {}
+
+        const allMonitorIds = allMonitors?.map((m) => {
+          return {
+            id: m.id,
+            hasFocus: m.hasFocus,
+          }
+        }) ?? []
+
+        const workspaceIds = currentMonitor?.children?.map((w) => {
+          return {
+            id: w.id,
+            displayName: w.displayName,
+            hasFocus: w.hasFocus,
+          }
+        }) ?? []
+
         glazeConfigEventBus.next({
           type: 'glaze-config-update',
-          config: providers.outputMap.glazewm,
+          config: {
+            allMonitors: allMonitorIds,
+            monitorWorkspaces: workspaceIds,
+          },
         })
       }
 
       // Save the config to the server when the current monitor has focus
       glazeConfigEventBus.subscribe(() => {
-        if (currentMonitor.value?.hasFocus) {
+        const { currentMonitor } = providers.outputMap.glazewm ?? {}
+
+        if (currentMonitor?.hasFocus) {
           options.saveConfigToServer()
         }
       })
@@ -66,9 +95,8 @@ export const useGlaze = (options: UseGlazeOptions) => {
   }
 
   return {
-    allMonitors,
-    currentMonitor,
-    monitorWorkspaces,
+    allMonitors: computed(() => glazeConfig.value?.allMonitors ?? []),
+    monitorWorkspaces: computed(() => glazeConfig.value?.monitorWorkspaces ?? []),
     initialize,
   }
 }
