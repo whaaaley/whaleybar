@@ -7,9 +7,10 @@ import './index.css'
 const App = defineComponent({
   name: 'App',
   setup () {
+    console.log(import.meta.env)
     return () => (
       <>
-        {import.meta.env.VITE_ZEBAR === 'true' ? <Zebar/> : <RouterView/>}
+        {import.meta.env.VITE_ENV === 'zebar' ? <Zebar/> : <RouterView/>}
       </>
     )
   },
@@ -41,7 +42,9 @@ const routes = [{
     name: 'Home',
     setup () {
       return () => (
-        <Zebar/>
+        <div class='h-screen overflow-auto bg-black text-white'>
+          <Zebar/>
+        </div>
       )
     },
   }),
