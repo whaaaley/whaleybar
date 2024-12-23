@@ -12,15 +12,17 @@ export const useLogStream = () => {
     retry: false,
     queryFn: () => (
       logStreamQueries.connectLogs((data: LogStreamMessageSchema) => {
-        if (data.category.includes('glaze') && data.properties.type === 'glaze-config-update') {
+        const { category, properties } = data
+
+        if (category.includes('glaze') && properties.type === 'glaze-config-update') {
           glazeConfigEventBus.next({
             type: 'glaze-config-update',
-            payload: data.properties.glazeConfig,
+            config: properties.glazeConfig,
           })
         }
 
         queryClient.setQueryData(['logStream'], (oldData: LogStreamMessageSchema[] = []) => {
-          return [...oldData, data].slice(-20) // Keep the last 20 logs
+          return [...oldData, data].slice(-20)
         })
       })
     ),

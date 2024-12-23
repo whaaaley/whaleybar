@@ -1,8 +1,6 @@
-// import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useQuery } from '@tanstack/vue-query'
 import { cva } from 'class-variance-authority'
 import { computed, defineComponent, onMounted, ref } from 'vue'
-// import { type LogStreamMessageSchema } from '$schemas'
 import { useLogStream } from '~/hooks'
 import { logStreamQueries } from '~/io/queries/logStream.queries'
 
@@ -64,32 +62,7 @@ const FormatLogLine = defineComponent({
 export default defineComponent({
   name: 'LiveLogs',
   setup () {
-    // const queryClient = useQueryClient()
-    //
-    // const {
-    //   data: logs,
-    //   error: logsError,
-    //   refetch: refetchLogs,
-    //   isLoading: isLoadingLogs,
-    // } = useQuery({
-    //   enabled: false,
-    //   queryKey: ['logs'],
-    //   retry: false,
-    //   queryFn: () => (
-    //     logStreamQueries.connectLogs((data) => {
-    //       queryClient.setQueryData(['logs'], (oldData: LogStreamMessageSchema[] = []) => {
-    //         return [...oldData, data]
-    //       })
-    //     })
-    //   ),
-    // })
-
-    const {
-      data: logs,
-      error: logsError,
-      refetch: refetchLogs,
-      isLoading: isLoadingLogs,
-    } = useLogStream()
+    const { data: logs, error: logsError, refetch: refetchLogs, isLoading: isLoadingLogs } = useLogStream()
 
     const logText = ref('')
 
