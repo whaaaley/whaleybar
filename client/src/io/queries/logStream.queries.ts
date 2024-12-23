@@ -1,9 +1,12 @@
-import { type LogRequestSchema, logResponseSchema, messageSchema } from '$schemas/logStream.schema'
+import {
+  type LogStreamMessageSchema,
+  logStreamMessageSchema,
+  type LogStreamRequestSchema,
+  type LogStreamResponseSchema,
+  logStreamResponseSchema,
+} from '$schemas'
 import { makeRequest } from '~/io/streams/fetch.streams'
 import { connect, disconnect } from '~/io/streams/sse.streams'
-
-export type LogResponseSchema = z.infer<typeof logResponseSchema>
-export type MessageSchema = z.infer<typeof messageSchema>
 
 type NextFn = (data: unknown) => void
 
@@ -14,12 +17,12 @@ export const connectLogs = async (next: NextFn) => {
 
   const data = await connect({
     url: '/stream/logs',
-    messageSchema,
+    messageSchema: logStreamMessageSchema,
     next,
     error: (err) => { throw err },
   })
 
-  return [data] as Promise<MessageSchema>[]
+  return [data] as Promise<LogStreamMessageSchema>[]
 }
 
 export const disconnectLogs = () => {
@@ -29,23 +32,31 @@ export const disconnectLogs = () => {
 export const reconnectLogs = async (next?: NextFn) => {
   disconnectLogs()
 
-  if (!next && !lastNext) {
+  const nextFn = next ?? lastNext
+  if (!nextFn) {
     throw new Error('Next function is not defined')
   }
 
-  return connectLogs(next ?? lastNext!)
+  return connectLogs(nextFn)
 }
 
-export const sendLog = async (params: LogRequestSchema) => {
+export const sendLog = async (params: LogStreamRequestSchema) => {
   const data = await makeRequest({
     method: 'POST',
     url: '/api/log',
-    responseSchema: logResponseSchema,
+    responseSchema: logStreamResponseSchema,
     body: JSON.stringify(params),
     headers: {
       'Content-Type': 'application/json',
     },
   })
 
-  return data as Promise<LogResponseSchema>
+  return data as Promise<LogStreamResponseSchema>
+}
+
+export const logStreamQueries = {
+  connectLogs,
+  disconnectLogs,
+  reconnectLogs,
+  sendLog,
 }

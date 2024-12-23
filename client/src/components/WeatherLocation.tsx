@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useNow } from '@vueuse/core'
 import { computed, defineComponent, onMounted } from 'vue'
 import { useEmoji } from '~/hooks/useEmoji'
-import { weatherQueries } from '~/io/queries/index'
+import { weatherQueries } from '~/io/queries/weather.queries'
 import { getWeatherEmoji } from '~/utils/emoji.util'
 
 export default defineComponent({

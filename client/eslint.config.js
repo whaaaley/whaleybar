@@ -1,6 +1,6 @@
-import fs from 'node:fs/promises'
 import pluginJs from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
+import stylisticTs from '@stylistic/eslint-plugin-ts'
 import importPlugin from 'eslint-plugin-import'
 import tailwind from 'eslint-plugin-tailwindcss'
 import unusedImports from 'eslint-plugin-unused-imports'
@@ -9,19 +9,11 @@ import globals from 'globals'
 import neostandard from 'neostandard'
 import tseslint from 'typescript-eslint'
 
-const autoImport = JSON.parse(
-  await fs.readFile('./.eslintrc-auto-import.json', 'utf8'),
-)
-
 const baseConfig = [
-  { files: ['*/.{js,jsx,ts,tsx.vue}'] },
+  { files: ['**/*.{js,jsx,ts,tsx.vue}'] },
   {
     languageOptions: {
       globals: {
-        // Include globals from auto-generated imports (e.g., Vue components,
-        // composables) created by unplugin-auto-import during the build process
-        ...autoImport.globals,
-
         // Add browser environment globals (window, document, etc.) to prevent
         // ESLint from flagging them as undefined
         ...globals.browser,
@@ -146,19 +138,28 @@ const stylisticConfig = [
   },
 ]
 
+// Must be last in the configuration order to properly override conflicting rules.
+// TypeScript's type system handles many checks more accurately than ESLint,
+// including import resolution, type checking, and variable usage.
+const typeScriptConfig = [
+  ...tseslint.configs.strict,
+  {
+    plugins: {
+      '@stylistic/ts': stylisticTs,
+    },
+    rules: {
+      // The TypeScript config adds rules for JSX that we want to disable in favor of
+      // the more accurate TypeScript type checking, which handles JSX syntax correctly
+      // 'react/jsx-no-undef': 0,
+    },
+  },
+]
+
 export default [
   ...baseConfig,
   ...tailwindConfig,
   ...vueConfig,
   ...standardConfig,
   ...stylisticConfig,
-
-  // Must be last in the configuration order to properly override conflicting rules.
-  // TypeScript's type system handles many checks more accurately than ESLint,
-  // including import resolution, type checking, and variable usage.
-  ...tseslint.configs.recommended,
-
-  // The TypeScript config adds rules for JSX that we want to disable in favor of
-  // the more accurate TypeScript type checking, which handles JSX syntax correctly
-  // 'react/jsx-no-undef': 0,
+  ...typeScriptConfig,
 ]

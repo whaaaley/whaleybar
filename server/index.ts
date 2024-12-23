@@ -10,7 +10,7 @@ const logger = getLogger(['app'])
 
 app.use(middleware.errorMiddleware)
 app.use(middleware.loggerMiddleware)
-app.use(middleware.rateLimitMiddleware())
+// app.use(middleware.rateLimitMiddleware())
 app.use(middleware.corsMiddleware)
 
 app.use(middleware.staticFileMiddleware)

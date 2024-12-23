@@ -1,13 +1,10 @@
-import { getLogger } from '@logtape/logtape'
 import { Context, ServerSentEvent, Status } from '@oak/oak'
-import { createSaltedHash } from '../../utils/hash.util.ts'
-import { logRequestSchema } from './logStream.schema.ts'
+import { getLogger } from '@logtape/logtape'
+import { incomingEvents, outgoingEvents } from './logStream.model.ts'
+import { logStreamRequestSchema } from './logStream.schema.ts'
+import { createSaltedHash } from './logStream.util.ts'
 
-const logger = getLogger(['app'])
-
-// type LogStreamDeps = {
-//   // Add dependencies here
-// }
+const log = getLogger(['app'])
 
 type Connection = {
   target: EventTarget
@@ -17,7 +14,7 @@ type Connection = {
 // Maps anonymized client IDs to their SSE connections
 const activeConnections = new Map<string, Connection>()
 
-export const createLogStreamController = (/* deps: LogStreamDeps */) => ({
+export const createLogStreamController = () => ({
   connect: async (ctx: Context) => {
     const { request: req } = ctx
     ctx.response.status = 200
@@ -26,7 +23,7 @@ export const createLogStreamController = (/* deps: LogStreamDeps */) => ({
     const existing = activeConnections.get(clientId)
 
     if (existing) {
-      logger.info(`Closing existing connection for client: ${clientId}`)
+      log.info(`Closing existing connection for client: ${clientId}`)
       clearInterval(existing.interval)
       activeConnections.delete(clientId)
     }
@@ -37,11 +34,18 @@ export const createLogStreamController = (/* deps: LogStreamDeps */) => ({
     // Prevents connection timeout by sending periodic heartbeats
     const interval = setInterval(() => {
       target.dispatchEvent(heartbeat)
-      logger.info('heartbeat')
+      log.info('heartbeat', { heartbeat: true })
     }, 30000)
 
     activeConnections.set(clientId, { target, interval })
-    logger.info(`New connection established for client: ${clientId}`)
+    log.info(`New connection established for client: ${clientId}`, {
+      newConnection: true,
+    })
+
+    // Outgoing events are broadcasted to the client
+    outgoingEvents.subscribe((data) => {
+      target.dispatchEvent(new ServerSentEvent('message', { data }))
+    })
 
     // Ensures connection resources are properly cleaned up on disconnect
     target.addEventListener('close', () => {
@@ -50,7 +54,7 @@ export const createLogStreamController = (/* deps: LogStreamDeps */) => ({
       if (connection) {
         clearInterval(connection.interval)
         activeConnections.delete(clientId)
-        logger.info(`Connection closed for client: ${clientId}`)
+        log.info(`Connection closed for client: ${clientId}`)
       }
     })
   },
@@ -58,24 +62,16 @@ export const createLogStreamController = (/* deps: LogStreamDeps */) => ({
     const { response: res, request: req } = ctx
 
     const body = await req.body.json()
-    const validated = logRequestSchema.parse(body)
+    const validated = logStreamRequestSchema.parse(body)
 
-    logger[validated.level](validated.message.join(', '))
+    // Emit the validated message to the logger
+    log[validated.level](validated.message.join(', '))
+    incomingEvents.next(validated)
 
     res.status = Status.OK
     res.body = { status: 'success' }
 
     // Return the response so we can test the controller
     return res
-  },
-  broadcast: (data: unknown) => {
-    const event = new ServerSentEvent('message', { data })
-
-    for (const { target } of activeConnections.values()) {
-      target.dispatchEvent(event)
-    }
-
-    // Return the data so we can test the controller
-    return data
   },
 })

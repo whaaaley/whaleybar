@@ -6,16 +6,24 @@ await configure({
     console: getConsoleSink(),
     logStream: getLogStreamSink(),
   },
-  filters: {},
+  filters: {
+    debugAndAbove: 'debug',
+    warningAndAbove: 'warning',
+  },
   loggers: [
     {
       category: ['app'],
-      level: 'debug',
+      filters: ['debugAndAbove'],
+      sinks: ['console', 'logStream'],
+    },
+    {
+      category: ['glaze'],
+      filters: ['debugAndAbove'],
       sinks: ['console', 'logStream'],
     },
     {
       category: ['logtape', 'meta'],
-      level: 'warning',
+      filters: ['warningAndAbove'],
       sinks: ['console'],
     },
   ],

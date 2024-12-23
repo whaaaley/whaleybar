@@ -45,6 +45,13 @@ type LoggingContext = {
 }
 
 export function logging<T extends LoggingContext> (context: T): T {
-  console.log(JSON.stringify(context.data, null, 2))
+  // console.log(JSON.stringify(context.data, null, 2))
+  // console.log(JSON.stringify(context.data))
+  console.log(
+    context.data?.category,
+    context.data?.level,
+    context.data?.message,
+    context.data?.properties,
+  )
   return context
 }

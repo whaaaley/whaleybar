@@ -1,26 +1,28 @@
 import { z } from 'zod'
 
-export const logRequestSchema = z.object({
+// Todo: Log messages should be the LogRecord type from @logtape/logtape
+
+export const logStreamRequestSchema = z.object({
   category: z.array(z.string()),
   level: z.enum(['debug', 'info', 'warn', 'error', 'fatal']),
   message: z.array(z.string()),
-  properties: z.unknown(),
+  properties: z.record(z.string(), z.unknown()),
 })
 
-export const logResponseSchema = z.object({
+export const logStreamResponseSchema = z.object({
   status: z.enum(['success', 'error']),
 })
 
-export const messageSchema = z.object({
+export const logStreamMessageSchema = z.object({
   category: z.array(z.string()),
   level: z.enum(['debug', 'info', 'warn', 'error', 'fatal']),
   timestamp: z.number(),
   message: z.array(z.string()),
   rawMessage: z.string(),
-  properties: z.unknown(),
+  properties: z.record(z.string(), z.unknown()),
 })
 
-export type LogRequestSchema = z.infer<typeof logRequestSchema>
-export type LogResponseSchema = z.infer<typeof logResponseSchema>
+export type LogStreamRequestSchema = z.infer<typeof logStreamRequestSchema>
+export type LogStreamResponseSchema = z.infer<typeof logStreamResponseSchema>
 
-export type MessageSchema = z.infer<typeof messageSchema>
+export type LogStreamMessageSchema = z.infer<typeof logStreamMessageSchema>
