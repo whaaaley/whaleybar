@@ -2,27 +2,18 @@ import { useQuery } from '@tanstack/vue-query'
 import { defineComponent, onMounted } from 'vue'
 import { MonitorGrid, WorkspaceGrid } from '~/components'
 import { useLogStream } from '~/hooks'
-import { useGlazeWM } from '~/hooks/useGlazeWM'
+import { useGlaze } from '~/hooks/useGlaze'
 import { logStreamQueries } from '~/io/queries/logStream.queries'
 
 export default defineComponent({
   name: 'GlazeGrids',
   setup () {
-    const { allMonitors, monitorWorkspaces } = useGlazeWM()
-
     const {
       data: logs,
       error: logsError,
       refetch: logStreamConnect,
       isLoading: isLoadingLogs,
     } = useLogStream()
-
-    // const dirtyKey = computed(() => {
-    //   return JSON.stringify({
-    //     allMonitors: allMonitors.value,
-    //     monitorWorkspaces: monitorWorkspaces.value,
-    //   })
-    // })
 
     const { data, error, refetch, isLoading } = useQuery({
       enabled: false,
@@ -31,27 +22,29 @@ export default defineComponent({
         return logStreamQueries.sendLog({
           category: ['glaze'],
           level: 'info',
-          message: ['Initialize glaze configuration'],
+          message: ['Set glaze config'],
           properties: {
-            setGlazeConfig: true,
-            allMonitors: allMonitors.value,
-            monitorWorkspaces: monitorWorkspaces.value,
+            type: 'set-config',
+            glazeConfig: {
+              allMonitors: allMonitors.value,
+              monitorWorkspaces: monitorWorkspaces.value,
+            },
           },
         })
       },
     })
 
-    const { initialize } = useGlazeWM({
-      initConfig: refetch,
+    const { allMonitors, monitorWorkspaces, initialize } = useGlaze({
+      saveConfigToServer: refetch,
     })
 
     onMounted(() => {
-      // LogStream connection is long lived; it won't resolve unless it closes
-      // so we don't need to await it
-      logStreamConnect()
-
-      // Initialize the GlazeWM state if we're in a Zebar context
-      initialize()
+      if (window.__TAURI_INTERNALS__) {
+        initialize()
+      }
+      else {
+        logStreamConnect()
+      }
     })
 
     const Grids = () => (

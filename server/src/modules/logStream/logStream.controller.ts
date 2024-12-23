@@ -11,7 +11,7 @@ type Connection = {
   interval: number
 }
 
-// Maps anonymized client IDs to their SSE connections
+// Maps client IDs to their SSE connections
 const activeConnections = new Map<string, Connection>()
 
 export const createLogStreamController = () => ({
@@ -39,7 +39,7 @@ export const createLogStreamController = () => ({
 
     activeConnections.set(clientId, { target, interval })
     log.info(`New connection established for client: ${clientId}`, {
-      newConnection: true,
+      type: 'new-connection',
     })
 
     // Outgoing events are broadcasted to the client
