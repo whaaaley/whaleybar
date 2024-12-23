@@ -31,7 +31,8 @@
     /* Project paths */
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["src/*"],
+      "$schemas": ["../server/src/modules/schemas.ts"]
     },
   },
   "include": [
@@ -40,6 +41,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/vite-env.d.ts"
+    "src/vite-env.d.ts",
+    "../server/src/modules/schema.ts",
+    "../server/src/modules/**/*.ts"
   ]
 }

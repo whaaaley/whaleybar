@@ -1,5 +1,5 @@
 import { Context, HttpError, Next, Status } from '@oak/oak'
-import { env } from '../env.js'
+import { env } from '../../env.ts'
 import { z } from 'zod'
 
 type ErrorType = HttpError | Error
@@ -43,28 +43,16 @@ export const errorMiddleware = async (ctx: Context, next: Next) => {
     const isDev = env.ENV === 'development'
 
     if (err instanceof z.ZodError) {
-      // ctx.response.status = Status.BadRequest
-      // ctx.response.body = formatZodError(err)
-      // return
-
-      return new Response(JSON.stringify(formatZodError(err)), {
-        status: Status.BadRequest,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      ctx.response.status = Status.BadRequest
+      ctx.response.body = formatZodError(err)
+      return
     }
 
     const error = err as ErrorType
-
-    // ctx.response.status = 'status' in error ? error.status : Status.InternalServerError
-    // ctx.response.body = formatError(error, isDev)
-
-    return new Response(JSON.stringify(formatError(error, isDev)), {
-      status: 'status' in error ? error.status : Status.InternalServerError,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    ctx.response.status = 'status' in error ? error.status : Status.InternalServerError
+    ctx.response.body = formatError(error, isDev)
   }
+
+  // Return the response so we can test the middleware
+  return ctx.response
 }

@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises'
 import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -11,21 +12,38 @@ const outDir = process.env.BUILD_ENV === 'local'
 export default defineConfig({
   build: {
     outDir,
-    sourcemap: process.env.DEV,
+    sourcemap: Boolean(process.env.DEV),
   },
   plugins: [
     vue(),
     vueJsx(),
     viteSingleFile(),
+    // Plugin to emit whaleybar.zebar.json alongside the bundled app.
+    // This config file needs to be separate since it's loaded at runtime
+    // by the Zebar platform to configure the app instance and its features.
+    {
+      name: 'zebar-config',
+      generateBundle: async (_options, bundle) => {
+        bundle['whaleybar.zebar.json'] = {
+          type: 'asset',
+          fileName: 'whaleybar.zebar.json',
+          name: 'whaleybar.zebar.json',
+          needsCodeReference: false,
+          source: await fs.readFile('./whaleybar.zebar.json', 'utf-8'),
+          names: [],
+          originalFileName: 'whaleybar.zebar.json',
+          originalFileNames: ['whaleybar.zebar.json'],
+        }
+      },
+    },
   ],
   resolve: {
     alias: {
       '~': fileURLToPath(new URL('./src', import.meta.url)),
       $: fileURLToPath(new URL('..', import.meta.url)),
-      $models: fileURLToPath(new URL('../server/models', import.meta.url)),
+      $schemas: fileURLToPath(new URL('../server/src/modules/schemas.ts', import.meta.url)),
     },
-    // Dedupe ensures the same instance of zod is used everywhere it's imported
-    // in the build
+    // Ensure the same instance of zod is used everywhere it's imported
     dedupe: ['zod'],
   },
   server: {

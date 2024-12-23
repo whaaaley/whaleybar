@@ -1,21 +1,29 @@
 import { configure, getConsoleSink } from '@logtape/logtape'
-import { getLogStreamSink } from './sinks/logStream.sink.ts'
+import { getLogStreamSink } from './modules/logStream/logStream.sink.ts'
 
 await configure({
   sinks: {
     console: getConsoleSink(),
     logStream: getLogStreamSink(),
   },
-  filters: {},
+  filters: {
+    debugAndAbove: 'debug',
+    warningAndAbove: 'warning',
+  },
   loggers: [
     {
       category: ['app'],
-      level: 'debug',
+      filters: ['debugAndAbove'],
+      sinks: ['console', 'logStream'],
+    },
+    {
+      category: ['glaze'],
+      filters: ['debugAndAbove'],
       sinks: ['console', 'logStream'],
     },
     {
       category: ['logtape', 'meta'],
-      level: 'warning',
+      filters: ['warningAndAbove'],
       sinks: ['console'],
     },
   ],

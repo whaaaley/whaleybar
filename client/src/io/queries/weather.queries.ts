@@ -1,5 +1,9 @@
-import { type WeatherRequest, type WeatherResponse, weatherResponseSchema } from '$models/weather.model'
+import { z } from 'zod'
+import { weatherRequestSchema, weatherResponseSchema } from '$schemas'
 import { makeRequest } from '~/io/streams/fetch.streams'
+
+type WeatherRequest = z.infer<typeof weatherRequestSchema>
+type WeatherResponse = z.infer<typeof weatherResponseSchema>
 
 // Type casting with 'as Promise<WeatherResponse>' is safe here because:
 // 1. The Zod schema (WeatherResponseSchema) validates the data at runtime
@@ -17,4 +21,8 @@ export const getWeather = async (params: WeatherRequest) => {
   })
 
   return data as Promise<WeatherResponse>
+}
+
+export const weatherQueries = {
+  getWeather,
 }

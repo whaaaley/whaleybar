@@ -125,3 +125,15 @@ export const zod = <T extends ZodContext>(context: T): T => {
     throw error
   }
 }
+
+type RateLimitContext = {
+  response: Response
+}
+
+export const rateLimit = <T extends RateLimitContext>(context: T): T => {
+  if (context.response.status === 429) {
+    throw new Error('Rate limit exceeded')
+  }
+
+  return context
+}

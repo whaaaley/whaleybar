@@ -1,8 +1,8 @@
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/vue-query'
 import { cva } from 'class-variance-authority'
 import { computed, defineComponent, onMounted, ref } from 'vue'
-import { logStreamQueries } from '~/io/queries'
-import { type MessageSchema } from '~/io/queries/logStreamQueries'
+import { useLogStream } from '~/hooks'
+import { logStreamQueries } from '~/io/queries/logStream.queries'
 
 const statusVariants = cva([
   'rounded px-2 text-black ',
@@ -45,7 +45,7 @@ const FormatLogLine = defineComponent({
         return null
       }
 
-      const { category, level, timestamp, message, properties } = props.line
+      const { category, level, timestamp, message } = props.line
 
       return (
         <div class='flex items-center gap-2 text-sm'>
@@ -62,22 +62,27 @@ const FormatLogLine = defineComponent({
 export default defineComponent({
   name: 'LiveLogs',
   setup () {
-    const queryClient = useQueryClient()
+    const { data: logs, error: logsError, refetch: refetchLogs, isLoading: isLoadingLogs } = useLogStream()
+
+    const logText = ref('')
 
     const {
-      data: logs,
-      error: logsError,
-      refetch: refetchLogs,
-      isLoading: isLoadingLogs,
+      data: sendLogData,
+      error: sendLogError,
+      refetch: sendLogRefetch,
+      isLoading: isLoadingSendLog,
     } = useQuery({
       enabled: false,
-      queryKey: ['logs'],
+      queryKey: ['sendLog'],
       retry: false,
-      queryFn: () => logStreamQueries.connectLogs((data) => {
-        queryClient.setQueryData(['logs'], (oldData: MessageSchema[] = []) => {
-          return [...oldData, data]
+      queryFn: () => (
+        logStreamQueries.sendLog({
+          category: ['test'],
+          level: 'info',
+          message: [logText.value],
+          properties: {},
         })
-      }),
+      ),
     })
 
     const formattedError = computed(() => {
@@ -100,16 +105,9 @@ export default defineComponent({
       !isLoadingLogs.value && Array.isArray(logs.value)
     ))
 
-    const logText = ref('')
     const sendLog = (event: KeyboardEvent) => {
       if (event.key !== 'Enter') return
-
-      logStreamQueries.sendLog({
-        category: ['test'],
-        level: 'info',
-        message: [logText.value],
-        properties: {},
-      })
+      sendLogRefetch()
     }
 
     const reconnect = () => logStreamQueries.reconnectLogs()
@@ -127,6 +125,9 @@ export default defineComponent({
             ))
           )}
         </pre>
+        {isLoadingSendLog.value && <div>Sending log...</div>}
+        {sendLogError.value && <div>Error sending log: {sendLogError.value.message}</div>}
+        <pre>sendLogData: {JSON.stringify(sendLogData.value, null, 2)}</pre>
         <input
           class='border bg-black'
           type='text'
