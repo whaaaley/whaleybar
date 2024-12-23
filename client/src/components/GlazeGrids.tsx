@@ -62,15 +62,17 @@ export default defineComponent({
     )
 
     return () => (
-      <div class='grid w-96 grid-cols-2 gap-4 bg-slate-800 text-white'>
-        <div>
-          {logsError.value ? <div>Error: {logsError.value.message}</div> : null}
-          {error.value ? <div>Error: {error.value.message}</div> : null}
+      <>
+        {isLoading.value ? <div>Loading...</div> : <Grids/>}
+        <div class='flex flex-col gap-2 text-sm text-white'>
+          <div>
+            {logsError.value ? `Error: ${logsError.value.message}` : 'no log stream error'}
+          </div>
+          <div>
+            {error.value ? `Error: ${error.value.message}` : 'no error sending log'}
+          </div>
         </div>
-        <div>
-          {isLoading.value ? <div>Loading...</div> : <Grids/>}
-        </div>
-      </div>
+      </>
     )
   },
 })
