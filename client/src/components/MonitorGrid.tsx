@@ -1,5 +1,4 @@
 import { cva } from 'class-variance-authority'
-// import { type Monitor } from 'glazewm'
 import { computed, defineComponent } from 'vue'
 import { type GlazeConfig } from '~/hooks/useGlaze'
 

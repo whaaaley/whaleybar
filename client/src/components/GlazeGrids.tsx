@@ -30,7 +30,7 @@ export default defineComponent({
       },
     })
 
-    const { allMonitors, monitorWorkspaces, initialize } = useGlaze({
+    const { allMonitors, monitorWorkspaces, monitorDimensions, initialize } = useGlaze({
       saveConfigToServer: refetch,
     })
 
@@ -53,10 +53,18 @@ export default defineComponent({
       </div>
     )
 
+    const showGrids = computed(() => {
+      return monitorDimensions.value?.height > 1200 || import.meta.env.VITE_ENV !== 'zebar'
+    })
+
     const Grids = () => (
       <>
-        <MonitorGrid monitors={allMonitors.value}/>
-        <WorkspaceGrid workspaces={monitorWorkspaces.value}/>
+        {showGrids.value && (
+          <>
+            <MonitorGrid monitors={allMonitors.value}/>
+            <WorkspaceGrid workspaces={monitorWorkspaces.value}/>
+          </>
+        )}
       </>
     )
 

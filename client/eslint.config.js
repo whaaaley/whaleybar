@@ -1,6 +1,5 @@
 import pluginJs from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
-import stylisticTs from '@stylistic/eslint-plugin-ts'
 import importPlugin from 'eslint-plugin-import'
 import tailwind from 'eslint-plugin-tailwindcss'
 import unusedImports from 'eslint-plugin-unused-imports'
@@ -10,7 +9,7 @@ import neostandard from 'neostandard'
 import tseslint from 'typescript-eslint'
 
 const baseConfig = [
-  { files: ['**/*.{js,jsx,ts,tsx.vue}'] },
+  { files: ['**/*.{js,jsx,ts,tsx,vue}'] },
   {
     languageOptions: {
       globals: {
@@ -38,7 +37,7 @@ const tailwindConfig = [
 const vueConfig = [
   ...pluginVue.configs['flat/recommended'],
   {
-    files: ['*/.vue'],
+    files: ['**/*.vue'],
     languageOptions: { parserOptions: { parser: tseslint.parser } },
   },
   {
@@ -105,7 +104,9 @@ const standardConfig = [
 ]
 
 const stylisticConfig = [
-  stylistic.configs['recommended-flat'],
+  // Neostandard now imports the @stylistic/eslint-plugin, that's why we're able
+  // to use the config and rules here
+  stylistic.configs['recommended-flat'], // Do I still need this?
   {
     rules: {
       '@stylistic/jsx-one-expression-per-line': 0,
@@ -144,9 +145,6 @@ const stylisticConfig = [
 const typeScriptConfig = [
   ...tseslint.configs.strict,
   {
-    plugins: {
-      '@stylistic/ts': stylisticTs,
-    },
     rules: {
       // The TypeScript config adds rules for JSX that we want to disable in favor of
       // the more accurate TypeScript type checking, which handles JSX syntax correctly

@@ -1,6 +1,13 @@
+import { useObservable, useSubscription } from '@vueuse/rxjs'
 import { filter, map, Subject } from 'rxjs'
 import { computed, ref } from 'vue'
 import { createProviderGroup } from 'zebar'
+
+declare global {
+  interface Window {
+    __TAURI_INTERNALS__?: unknown
+  }
+}
 
 export type GlazeConfig = {
   allMonitors: {
@@ -12,6 +19,10 @@ export type GlazeConfig = {
     displayName: string
     hasFocus: boolean
   }[]
+  monitorDimensions: {
+    width: number
+    height: number
+  }
 }
 
 type Event = {
@@ -19,23 +30,17 @@ type Event = {
   config: GlazeConfig
 }
 
-const glazeConfig = ref<GlazeConfig | null>(null)
-const lastMonitorId = ref<string | null>(null)
-
-export const glazeConfigEventBus = new Subject<Event>()
-
-glazeConfigEventBus.pipe(
+export const configSubject = new Subject<Event>()
+export const glazeConfig$ = configSubject.asObservable().pipe(
   filter(event => event.type === 'glaze-config-update'),
   map(event => event.config),
-).subscribe((config) => {
-  glazeConfig.value = config
-})
+)
 
 type UseGlazeOptions = {
   saveConfigToServer: () => Promise<unknown>
 }
 
-export const useGlaze = (options: UseGlazeOptions) => {
+export const useGlaze = (options?: UseGlazeOptions) => {
   const initialize = () => {
     if (window.__TAURI_INTERNALS__) {
       const providers = createProviderGroup({
@@ -43,7 +48,8 @@ export const useGlaze = (options: UseGlazeOptions) => {
       })
 
       const glazeNext = () => {
-        const { allMonitors, currentMonitor } = providers.outputMap.glazewm ?? {}
+        const { glazewm } = providers.outputMap
+        const { allMonitors, currentMonitor } = glazewm ?? {}
 
         const allMonitorIds = allMonitors?.map((m) => {
           return {
@@ -60,30 +66,42 @@ export const useGlaze = (options: UseGlazeOptions) => {
           }
         }) ?? []
 
-        glazeConfigEventBus.next({
+        const monitorDimensions = {
+          width: currentMonitor?.width ?? 0,
+          height: currentMonitor?.height ?? 0,
+        }
+
+        configSubject.next({
           type: 'glaze-config-update',
           config: {
             allMonitors: allMonitorIds,
             monitorWorkspaces: workspaceIds,
+            monitorDimensions,
           },
         })
       }
 
-      // Save the config to the server when the current monitor has focus
-      glazeConfigEventBus.subscribe(() => {
-        const { currentMonitor } = providers.outputMap.glazewm ?? {}
+      // Subscribe to config updates and save when current monitor has focus
+      useSubscription(
+        glazeConfig$.subscribe(() => {
+          const { glazewm } = providers.outputMap
+          const { currentMonitor } = glazewm ?? {}
 
-        if (currentMonitor?.hasFocus) {
-          options.saveConfigToServer()
-        }
-      })
+          if (currentMonitor?.hasFocus) {
+            options?.saveConfigToServer()
+          }
+        }),
+      )
 
       // Initialize the glaze config
       glazeNext()
 
+      const lastMonitorId = ref<string | null>(null)
+
       // Update the glaze config when the monitor changes
       providers.onOutput(() => {
-        const activeMonitor = providers.outputMap.glazewm?.allMonitors.find(m => m.hasFocus)
+        const { glazewm } = providers.outputMap
+        const activeMonitor = glazewm?.allMonitors.find(m => m.hasFocus)
         const activeMonitorId = activeMonitor?.id ?? null
 
         if (lastMonitorId.value !== activeMonitorId) {
@@ -94,15 +112,18 @@ export const useGlaze = (options: UseGlazeOptions) => {
     }
   }
 
-  return {
-    allMonitors: computed(() => glazeConfig.value?.allMonitors ?? []),
-    monitorWorkspaces: computed(() => glazeConfig.value?.monitorWorkspaces ?? []),
-    initialize,
-  }
-}
+  // Use observable for reactive config values
+  const config = useObservable(glazeConfig$)
 
-declare global {
-  interface Window {
-    __TAURI_INTERNALS__?: unknown
+  // Computed values
+  const allMonitors = computed(() => config.value?.allMonitors ?? [])
+  const monitorWorkspaces = computed(() => config.value?.monitorWorkspaces ?? [])
+  const monitorDimensions = computed(() => config.value?.monitorDimensions ?? { width: 0, height: 0 })
+
+  return {
+    allMonitors,
+    monitorWorkspaces,
+    monitorDimensions,
+    initialize,
   }
 }

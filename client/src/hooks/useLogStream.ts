@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { type LogStreamMessage } from '$schemas'
-import { glazeConfigEventBus } from '~/hooks/useGlaze'
+import { configSubject } from '~/hooks/useGlaze'
 import { logStreamQueries } from '~/io/queries/logStream.queries'
 
 export const useLogStream = () => {
@@ -15,7 +15,7 @@ export const useLogStream = () => {
         const { category, properties } = data
 
         if (category.includes('glaze') && properties.type === 'glaze-config-update') {
-          glazeConfigEventBus.next({
+          configSubject.next({
             type: 'glaze-config-update',
             config: properties.glazeConfig,
           })

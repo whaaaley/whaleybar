@@ -1,13 +1,13 @@
 import { VueQueryPlugin } from '@tanstack/vue-query'
-import { createApp, defineComponent } from 'vue'
+import { computed, createApp, defineComponent } from 'vue'
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import { useGlaze } from './hooks/useGlaze'
 import { GlazeGrids, LiveLogs, TimeDate, WeatherLocation } from '~/components'
 import './index.css'
 
 const App = defineComponent({
   name: 'App',
   setup () {
-    console.log(import.meta.env)
     return () => (
       <>
         {import.meta.env.VITE_ENV === 'zebar' ? <Zebar/> : <RouterView/>}
@@ -19,16 +19,26 @@ const App = defineComponent({
 const Zebar = defineComponent({
   name: 'Zebar',
   setup () {
+    const { monitorDimensions } = useGlaze()
+
+    const showWeather = computed(() => {
+      return monitorDimensions.value?.height > 1200 || import.meta.env.VITE_ENV !== 'zebar'
+    })
+
     return () => (
       <div class='flex h-screen items-center gap-4 bg-gradient-to-b from-transparent to-black/50 px-6'>
         <TimeDate/>
-        <WeatherLocation location='Des Moines, Iowa'/>
-        <WeatherLocation
-          includeTime
-          label='Haywards Heath, UK'
-          location='RH16'
-          timezone='Europe/London'
-        />
+        {showWeather.value && (
+          <>
+            <WeatherLocation location='Des Moines, Iowa'/>
+            <WeatherLocation
+              includeTime
+              label='Haywards Heath, UK'
+              location='RH16'
+              timezone='Europe/London'
+            />
+          </>
+        )}
         <GlazeGrids/>
       </div>
     )
