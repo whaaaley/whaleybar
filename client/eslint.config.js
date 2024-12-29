@@ -51,7 +51,12 @@ const vueConfig = [
 ]
 
 const standardConfig = [
-  ...neostandard(),
+  // Neostandard includes the @stylistic/eslint-plugin, but we need to import it
+  // ourselves to add custom rules; this unfortunately seems to be an all or
+  // nothing situation
+  ...neostandard({
+    noStyle: true,
+  }),
   importPlugin.flatConfigs.recommended,
   {
     plugins: {
@@ -109,9 +114,7 @@ const stylisticConfig = [
   stylistic.configs['recommended-flat'],
   {
     plugins: {
-      // Neostandard now imports the @stylistic/eslint-plugin; if we import it
-      // here, we'll get a duplicate plugin error
-      // '@stylistic': stylistic,
+      '@stylistic': stylistic,
     },
     rules: {
       '@stylistic/jsx-one-expression-per-line': 0,
