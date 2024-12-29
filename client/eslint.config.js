@@ -10,7 +10,7 @@ import neostandard from 'neostandard'
 import tseslint from 'typescript-eslint'
 
 const baseConfig = [
-  { files: ['**/*.{js,jsx,ts,tsx.vue}'] },
+  { files: ['**/*.{js,jsx,ts,tsx,vue}'] },
   {
     languageOptions: {
       globals: {
@@ -38,7 +38,7 @@ const tailwindConfig = [
 const vueConfig = [
   ...pluginVue.configs['flat/recommended'],
   {
-    files: ['*/.vue'],
+    files: ['**/*.vue'],
     languageOptions: { parserOptions: { parser: tseslint.parser } },
   },
   {

@@ -3,11 +3,12 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     deno
+    supabase-cli
     tmux
   ];
 
   shellHook = ''
     echo "🚀 Starting whaleybar development environment..."
-    sh tmux.sh
+    exec sh tmux.sh
   '';
 }

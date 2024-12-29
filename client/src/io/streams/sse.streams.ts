@@ -1,7 +1,7 @@
 import { fromEvent, lastValueFrom, map, of, pipe, switchMap, tap } from 'rxjs'
 import { type ZodSchema } from 'zod'
-import { prefixUrl } from '~/io/operators/request.operators'
-import { logging, unmarshal, zod } from '~/io/operators/stream.operators'
+import { prefixUrl } from './fetch.operators'
+import { logging, unmarshal, zod } from './sse.operators'
 
 type ConnectConfig = {
   url: string
