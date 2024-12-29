@@ -104,10 +104,15 @@ const standardConfig = [
 ]
 
 const stylisticConfig = [
-  // Neostandard now imports the @stylistic/eslint-plugin, that's why we're able
-  // to use the config and rules here
-  stylistic.configs['recommended-flat'], // Do I still need this?
+  // The recommended-flat config includes things like trailing commas that are
+  // not included Neostandard's recommended config
+  stylistic.configs['recommended-flat'],
   {
+    plugins: {
+      // Neostandard now imports the @stylistic/eslint-plugin; if we import it
+      // here, we'll get a duplicate plugin error
+      // '@stylistic': stylistic,
+    },
     rules: {
       '@stylistic/jsx-one-expression-per-line': 0,
       '@stylistic/quote-props': ['error', 'as-needed'],
@@ -139,9 +144,9 @@ const stylisticConfig = [
   },
 ]
 
-// Must be last in the configuration order to properly override conflicting rules.
+// Must be last in the configuration order to properly override conflicting rules
 // TypeScript's type system handles many checks more accurately than ESLint,
-// including import resolution, type checking, and variable usage.
+// including import resolution, type checking, and variable usage
 const typeScriptConfig = [
   ...tseslint.configs.strict,
   {
