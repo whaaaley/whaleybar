@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { makeRequest } from '~/io/streams/fetch.streams'
+import { makeRequest } from '../streams/fetch.streams'
 
 type GetWeatherEmojiParams = {
   weatherCondition: string

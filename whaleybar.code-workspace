@@ -14,9 +14,6 @@
 		}
 	],
 	"settings": {
-		"cSpell.enabledFileTypes": {
-			"*": true
-		},
 		"cSpell.words": [
 			"callees",
 			"classname",

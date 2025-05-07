@@ -101,10 +101,6 @@ export const http = <T extends HttpContext>(context: T): T => {
   return context
 }
 
-//
-//
-//
-
 type ZodContext = {
   data: unknown
   responseSchema: ZodSchema

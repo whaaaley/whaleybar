@@ -5,7 +5,7 @@ const monthlyEmojis = [
   { month: 'January', name: 'snowman', unicode: '2603-fe0f' },
   { month: 'February', name: 'heart-with-ribbon', unicode: '1f49d' },
   { month: 'March', name: 'four-leaf-clover', unicode: '1f340' },
-  { month: 'April', name: 'umbrella', unicode: '2614-fe0f' },
+  { month: 'April', name: 'umbrella', unicode: '2602-fe0f' },
   { month: 'May', name: 'blossom', unicode: '1f33c' },
   { month: 'June', name: 'rainbow-flag', unicode: '1f3f3-fe0f-200d-1f308' },
   { month: 'July', name: 'flag-united-states', unicode: '1f1fa-1f1f8' },
@@ -28,7 +28,7 @@ export const useEmoji = () => {
   const getEmoji = ({ name, platform = 'apple', unicode }: EmojiParams) => {
     const baseUrl = 'https://em-content.zobj.net/source'
     const versions = {
-      apple: '391',
+      apple: '419',
       google: '350',
       microsoft: '319',
       samsung: '320',

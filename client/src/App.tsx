@@ -26,19 +26,21 @@ const Zebar = defineComponent({
     })
 
     return () => (
-      <div class='flex h-screen items-center gap-4 bg-gradient-to-b from-transparent to-black/50 px-6'>
-        <TimeDate/>
-        {showWeather.value && (
-          <>
-            <WeatherLocation location='Des Moines, Iowa'/>
-            <WeatherLocation
-              includeTime
-              label='Haywards Heath, UK'
-              location='RH16'
-              timezone='Europe/London'
-            />
-          </>
-        )}
+      <div class='flex h-screen items-center justify-between bg-gradient-to-b from-transparent to-black/25 pl-4 pr-3'>
+        <div class='flex items-center gap-4'>
+          <TimeDate/>
+          {showWeather.value && (
+            <>
+              <WeatherLocation location='Des Moines, Iowa'/>
+              <WeatherLocation
+                includeTime
+                label='Haywards Heath, UK'
+                location='RH16'
+                timezone='Europe/London'
+              />
+            </>
+          )}
+        </div>
         <GlazeGrids/>
       </div>
     )

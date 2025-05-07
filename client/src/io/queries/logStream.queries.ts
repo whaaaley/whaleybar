@@ -1,7 +1,7 @@
 import { z } from 'zod'
+import { makeRequest } from '../streams/fetch.streams'
+import { connect, disconnect } from '../streams/sse.streams'
 import { logStreamMessageSchema, logStreamRequestSchema, logStreamResponseSchema } from '$schemas'
-import { makeRequest } from '~/io/streams/fetch.streams'
-import { connect, disconnect } from '~/io/streams/sse.streams'
 
 type LogStreamRequest = z.infer<typeof logStreamRequestSchema>
 type LogStreamResponse = z.infer<typeof logStreamResponseSchema>

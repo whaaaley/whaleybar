@@ -11,6 +11,9 @@ export default defineConfig((env) => {
     : undefined
 
   return {
+    server: {
+      port: 4200,
+    },
     build: {
       outDir,
       sourcemap: Boolean(env.mode === 'development'),
@@ -46,9 +49,6 @@ export default defineConfig((env) => {
       },
       // Ensure the same instance of zod is used everywhere it's imported
       dedupe: ['zod'],
-    },
-    server: {
-      port: 4200,
     },
   }
 })
