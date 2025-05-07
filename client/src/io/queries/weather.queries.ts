@@ -1,6 +1,6 @@
 import { z } from 'zod'
+import { makeRequest } from '../streams/fetch.streams'
 import { weatherRequestSchema, weatherResponseSchema } from '$schemas'
-import { makeRequest } from '~/io/streams/fetch.streams'
 
 type WeatherRequest = z.infer<typeof weatherRequestSchema>
 type WeatherResponse = z.infer<typeof weatherResponseSchema>

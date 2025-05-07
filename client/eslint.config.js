@@ -143,6 +143,8 @@ const stylisticConfig = [
         afterOpening: 'never',
         beforeClosing: 'never',
       }],
+      // Added after I disabled Neostandard's style rules
+      '@stylistic/jsx-quotes': ['error', 'prefer-single'],
     },
   },
 ]

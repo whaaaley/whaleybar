@@ -30,7 +30,7 @@ export default defineComponent({
       },
     })
 
-    const { allMonitors, monitorWorkspaces, monitorDimensions, initialize } = useGlaze({
+    const { allMonitors, activeWorkspaceDisplayName, monitorWorkspaces, monitorDimensions, initialize } = useGlaze({
       saveConfigToServer: refetch,
     })
 
@@ -60,10 +60,13 @@ export default defineComponent({
     const Grids = () => (
       <>
         {showGrids.value && (
-          <>
+          <div class='grid gap-[4px]'>
             <MonitorGrid monitors={allMonitors.value}/>
-            <WorkspaceGrid workspaces={monitorWorkspaces.value}/>
-          </>
+            <WorkspaceGrid
+              activeWorkspaceDisplayName={activeWorkspaceDisplayName.value ?? undefined}
+              workspaces={monitorWorkspaces.value}
+            />
+          </div>
         )}
       </>
     )
